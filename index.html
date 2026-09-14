@@ -676,6 +676,24 @@ document.getElementById('genText').addEventListener('keydown',function(e){
   const s=this.selectionStart,val=this.value;
   const lastNL=val.lastIndexOf('\n',s-1);
   const curLine=val.substring(lastNL+1,s);
+
+  // continuar tabla: si la línea actual es una fila de tabla "| a | b |"
+  if(/^\|.+\|\s*$/.test(curLine.trim()) && !/^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?$/.test(curLine.trim())){
+    e.preventDefault();
+    const seguir=confirm('¿Añadir otra fila a la tabla?');
+    if(seguir){
+      const cols=curLine.trim().slice(1,-1).split('|').length;
+      const newRow='| '+Array(cols).fill(' ').join('| ')+'|';
+      this.value=val.substring(0,s)+'\n'+newRow+val.substring(this.selectionEnd);
+      this.selectionStart=this.selectionEnd=s+3;
+    } else {
+      this.value=val.substring(0,s)+'\n'+val.substring(this.selectionEnd);
+      this.selectionStart=this.selectionEnd=s+1;
+    }
+    updateGen();
+    return;
+  }
+
   const match=curLine.match(/^>\s*/);
   if(!match)return;
   e.preventDefault();
