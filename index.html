@@ -175,6 +175,8 @@ footer a:hover{color:var(--text2)}
   display:grid;
   grid-template-columns:1fr 1fr;
   min-height:0;
+  height:calc(100vh - 113px);
+  overflow:hidden;
 }
 @media(max-width:768px){.gen-main{grid-template-columns:1fr}}
 
@@ -182,6 +184,7 @@ footer a:hover{color:var(--text2)}
 .gen-editor-panel{
   border-right:1px solid var(--border);
   display:flex;flex-direction:column;
+  overflow:hidden;min-height:0;
 }
 .gen-editor-topbar{
   display:flex;align-items:center;justify-content:space-between;
@@ -197,7 +200,7 @@ footer a:hover{color:var(--text2)}
   background:transparent;border:none;outline:none;
   color:var(--text);font-family:'DM Mono',monospace;font-size:13px;
   padding:20px;resize:none;line-height:1.7;
-  min-height:400px;
+  min-height:0;overflow-y:auto;
 }
 #genText::placeholder{color:var(--text3)}
 
@@ -205,25 +208,25 @@ footer a:hover{color:var(--text2)}
 .gen-preview-panel{
   display:flex;flex-direction:column;
   background:var(--bg);
+  overflow:hidden;
+  min-height:0;
 }
 .gen-preview-topbar{
   display:flex;align-items:center;justify-content:space-between;
   padding:8px 16px;border-bottom:1px solid var(--border);
   background:rgba(0,0,0,0.1);flex-shrink:0;
-  position:sticky;top:calc(60px + 53px);/* header + toolbar */
-  z-index:100;
 }
 .gen-preview-topbar-label{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:0.05em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
 .gh-dot{width:8px;height:8px;border-radius:50%;background:var(--tip);display:inline-block;animation:pulse 2s ease infinite}
 .copy-preview-btn{font-size:11px;padding:4px 10px;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s}
 .copy-preview-btn:hover{color:var(--text)}
 
-/* Área de preview — crece con el contenido */
+/* Área de preview — scroll interno propio */
 #genPreview{
   padding:24px;
   display:flex;flex-direction:column;
   gap:16px;
-  /* NO hay height fija: crece con el contenido */
+  flex:1;overflow-y:auto;min-height:0;
 }
 
 /* Bloques de callout en preview */
@@ -254,7 +257,19 @@ footer a:hover{color:var(--text2)}
 .prev-text a{color:var(--note);text-decoration:underline;text-underline-offset:3px}
 .prev-text ul,.prev-text ol{padding-left:20px}
 .prev-text li{margin-bottom:2px;color:var(--text2)}
+.prev-text li.li-task{list-style:none;margin-left:-20px;display:flex;gap:6px;align-items:flex-start}
+.prev-text li.li-task input{margin-top:4px;accent-color:var(--tip)}
 .prev-text p{margin:2px 0}
+.prev-text h5,.prev-text h6{font-family:'Instrument Serif',serif;color:var(--text);margin:8px 0 4px;font-size:13px;font-weight:600}
+.prev-text del{color:var(--text3);text-decoration:line-through}
+.prev-text blockquote{border-left:3px solid var(--border2);margin:6px 0;padding:2px 14px;color:var(--text3);font-style:italic}
+.prev-text pre{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:6px 0}
+.prev-text pre code{background:none;border:none;padding:0;color:var(--text2);font-size:0.9em}
+.prev-text img{max-width:100%;border-radius:8px;display:block;margin:6px 0}
+.prev-text table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px}
+.prev-text th,.prev-text td{border:1px solid var(--border2);padding:6px 10px;text-align:left}
+.prev-text th{background:var(--bg3);color:var(--text);font-weight:600}
+.prev-text tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
 
 /* empty state */
 .prev-empty{color:var(--text3);font-size:13px;font-style:italic;padding:20px 0;text-align:center}
@@ -264,6 +279,7 @@ footer a:hover{color:var(--text2)}
   display:none;
   flex-direction:column;
   background:var(--bg);
+  flex:1;overflow-y:auto;min-height:0;
 }
 .gen-code-content{
   padding:20px;
@@ -400,6 +416,12 @@ footer a:hover{color:var(--text2)}
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('BOLD')"><span class="tb-icon"><b style="font-size:12px">B</b></span>Negrita</button>
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CODE')"><span class="tb-icon">💻</span>Código</button>
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('LIST')"><span class="tb-icon">📋</span>Lista</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CHECKLIST')"><span class="tb-icon">☑️</span>Checklist</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('QUOTE')"><span class="tb-icon">❝</span>Cita</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('STRIKE')"><span class="tb-icon">S̶</span>Tachado</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('IMAGE')"><span class="tb-icon">🖼️</span>Imagen</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CODEBLOCK')"><span class="tb-icon">📄</span>Bloque código</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('TABLE')"><span class="tb-icon">📊</span>Tabla</button>
     </div>
   </div>
 
@@ -412,7 +434,12 @@ footer a:hover{color:var(--text2)}
         <span class="gen-editor-topbar-label">Editor Markdown</span>
         <div style="display:flex;align-items:center;gap:8px">
           <button id="exitCalloutBtn" onclick="exitCallout()">Salir de callout 🚪</button>
-          <span style="font-size:10px;color:var(--text3)">↵ dentro de callout añade <code style="font-size:9px">&gt;</code> auto</span>
+          <input type="file" id="mdFileInput" accept=".md,.markdown,.txt" style="display:none" onchange="openMdFile(event)">
+          <button class="copy-preview-btn" onclick="document.getElementById('mdFileInput').click()">📂 Abrir .md</button>
+          <button class="copy-preview-btn" onclick="resetGen()">↺ Reset</button>
+          <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
+            <input type="checkbox" id="syncScrollChk" checked style="accent-color:var(--tip)"> Sync scroll
+          </label>
         </div>
       </div>
       <textarea id="genText" oninput="updateGen()" placeholder="Empieza a escribir tu Markdown aquí...
@@ -436,6 +463,7 @@ Ejemplo:
         <div style="display:flex;gap:6px;align-items:center">
           <span class="gen-preview-topbar-label"><span class="gh-dot"></span> Vista GitHub</span>
           <button class="copy-preview-btn" id="copyPreviewBtn" onclick="copyCode()">Copiar código</button>
+          <button class="copy-preview-btn" onclick="exportPDF()">🖨️ Exportar PDF</button>
         </div>
       </div>
 
@@ -581,10 +609,67 @@ function insertFormat(type){
   else if(type==='BOLD'){tpl=`**${sel||'texto'}**`;ss=2;se=tpl.length-2;}
   else if(type==='CODE'){tpl=`\`${sel||'código'}\``;ss=1;se=tpl.length-1;}
   else if(type==='LIST'){tpl=`\n- ${sel||'Elemento'}\n`;ss=3;se=tpl.length-1;}
+  else if(type==='CHECKLIST'){tpl=`\n- [ ] ${sel||'Tarea'}\n`;ss=7;se=tpl.length-1;}
+  else if(type==='QUOTE'){tpl=`\n> ${sel||'Cita'}\n`;ss=3;se=tpl.length-1;}
+  else if(type==='STRIKE'){tpl=`~~${sel||'texto'}~~`;ss=2;se=tpl.length-2;}
+  else if(type==='IMAGE'){tpl=`\n![${sel||'alt'}](https://url-imagen.png)\n`;ss=tpl.indexOf('(')+1;se=tpl.length-2;}
+  else if(type==='CODEBLOCK'){tpl=`\n\`\`\`js\n${sel||'código'}\n\`\`\`\n`;ss=5;se=5+(sel||'código').length;}
+  else if(type==='TABLE'){tpl=`\n| Col A | Col B |\n| --- | --- |\n| valor 1 | valor 2 |\n`;ss=tpl.length;se=tpl.length;}
   ta.value=ta.value.substring(0,s)+tpl+ta.value.substring(e);
   ta.focus();ta.selectionStart=s+ss;ta.selectionEnd=s+se;
   updateGen();
 }
+
+function openMdFile(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{document.getElementById('genText').value=reader.result;updateGen();};
+  reader.readAsText(file);
+  ev.target.value='';
+}
+function resetGen(){
+  if(!confirm('¿Borrar todo el contenido del editor?'))return;
+  document.getElementById('genText').value='';
+  updateGen();
+}
+function exportPDF(){
+  const html=document.getElementById('genPreview').innerHTML;
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Markdown</title>
+  <style>
+    body{font-family:'DM Sans',Arial,sans-serif;color:#1a1a1a;max-width:800px;margin:30px auto;padding:0 20px;line-height:1.6}
+    code{font-family:monospace;background:#f0f0f0;padding:1px 5px;border-radius:4px}
+    pre{background:#f4f4f4;padding:12px;border-radius:8px;overflow-x:auto}
+    pre code{background:none}
+    table{border-collapse:collapse;width:100%}
+    th,td{border:1px solid #ccc;padding:6px 10px}
+    th{background:#eee}
+    blockquote{border-left:3px solid #ccc;margin:6px 0;padding:2px 14px;color:#666;font-style:italic}
+    .prev-callout{border-left:4px solid #999;border-radius:0 8px 8px 0;padding:14px 18px;background:#f7f7f7;margin-bottom:12px}
+    .prev-callout-title{font-weight:600;margin-bottom:6px}
+    img{max-width:100%}
+  </style></head><body>${html}</body></html>`);
+  w.document.close();
+  w.onload=()=>w.print();
+}
+
+let syncingScroll=false;
+document.getElementById('genText').addEventListener('scroll',function(){
+  if(!document.getElementById('syncScrollChk').checked||syncingScroll)return;
+  syncingScroll=true;
+  const ta=this,p=document.getElementById('genPreview');
+  const ratio=ta.scrollTop/(ta.scrollHeight-ta.clientHeight||1);
+  p.scrollTop=ratio*(p.scrollHeight-p.clientHeight);
+  requestAnimationFrame(()=>syncingScroll=false);
+});
+document.getElementById('genPreview').addEventListener('scroll',function(){
+  if(!document.getElementById('syncScrollChk').checked||syncingScroll)return;
+  syncingScroll=true;
+  const p=this,ta=document.getElementById('genText');
+  const ratio=p.scrollTop/(p.scrollHeight-p.clientHeight||1);
+  ta.scrollTop=ratio*(ta.scrollHeight-ta.clientHeight);
+  requestAnimationFrame(()=>syncingScroll=false);
+});
 
 document.getElementById('genText').addEventListener('keydown',function(e){
   if(e.key!=='Enter')return;
@@ -608,22 +693,54 @@ document.getElementById('genText').addEventListener('keydown',function(e){
 function safeHTML(str){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 
 function renderMD(text){
-  const lines=text.split('\n');let html='',inUl=false,inOl=false;
+  const lines=text.split('\n');let html='',inUl=false,inOl=false,inBq=false,inCode=false,codeBuf=[],codeLang='';
+  const esc=(s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const inline=(l)=>{
-    let s=l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    let s=esc(l);
+    s=s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1">');
+    s=s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
     s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
     s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
     s=s.replace(/__([^_]+)__/g,'<strong>$1</strong>');
+    s=s.replace(/~~([^~]+)~~/g,'<del>$1</del>');
     s=s.replace(/\*([^*]+)\*/g,'<em>$1</em>');
-    s=s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
     return s;
   };
-  const closeLists=()=>{if(inUl){html+='</ul>';inUl=false;}if(inOl){html+='</ol>';inOl=false;}};
-  for(const raw of lines){
-    const t=raw.trim();
+  const closeLists=()=>{if(inUl){html+='</ul>';inUl=false;}if(inOl){html+='</ol>';inOl=false;}if(inBq){html+='</blockquote>';inBq=false;}};
+  for(let i=0;i<lines.length;i++){
+    const raw=lines[i],t=raw.trim();
+
+    // fences de código ```lang ... ```
+    const fence=t.match(/^```(.*)$/);
+    if(fence){
+      if(!inCode){closeLists();inCode=true;codeLang=fence[1].trim();codeBuf=[];}
+      else{html+=`<pre><code class="lang-${codeLang}">${esc(codeBuf.join('\n'))}</code></pre>`;inCode=false;}
+      continue;
+    }
+    if(inCode){codeBuf.push(raw);continue;}
+
+    // tabla: fila con | y siguiente fila separadora ---|---
+    if(/^\|.+\|$/.test(t) && lines[i+1] && /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?$/.test(lines[i+1].trim())){
+      closeLists();
+      const headCells=t.slice(1,-1).split('|').map(c=>c.trim());
+      let rows=`<tr>${headCells.map(c=>`<th>${inline(c)}</th>`).join('')}</tr>`;
+      i+=2;
+      while(i<lines.length && /^\|.+\|$/.test(lines[i].trim())){
+        const cells=lines[i].trim().slice(1,-1).split('|').map(c=>c.trim());
+        rows+=`<tr>${cells.map(c=>`<td>${inline(c)}</td>`).join('')}</tr>`;
+        i++;
+      }
+      i--;
+      html+=`<table>${rows}</table>`;continue;
+    }
+
     if(/^(-{3,}|\*{3,}|_{3,})$/.test(t)){closeLists();html+='<hr>';continue;}
-    const hm=t.match(/^(#{1,4})\s+(.+)/);
+    const hm=t.match(/^(#{1,6})\s+(.+)/);
     if(hm){closeLists();const lv=hm[1].length;html+=`<h${lv}>${inline(hm[2])}</h${lv}>`;continue;}
+    const bqm=t.match(/^>\s?(.*)/);
+    if(bqm){if(!inBq){closeLists();html+='<blockquote>';inBq=true;}html+=`${inline(bqm[1])}<br>`;continue;}
+    const taskm=t.match(/^[-*+]\s+\[([ xX])\]\s+(.+)/);
+    if(taskm){if(!inUl){closeLists();html+='<ul>';inUl=true;}html+=`<li class="li-task"><input type="checkbox" disabled ${taskm[1]!=' '?'checked':''}>${inline(taskm[2])}</li>`;continue;}
     const ulm=t.match(/^[-*+]\s+(.+)/);
     if(ulm){if(!inUl){closeLists();html+='<ul>';inUl=true;}html+=`<li>${inline(ulm[1])}</li>`;continue;}
     const olm=t.match(/^\d+\.\s+(.+)/);
@@ -631,6 +748,7 @@ function renderMD(text){
     if(t===''){closeLists();continue;}
     closeLists();html+=`<p>${inline(raw)}</p>`;
   }
+  if(inCode)html+=`<pre><code>${esc(codeBuf.join('\n'))}</code></pre>`;
   closeLists();return html;
 }
 
