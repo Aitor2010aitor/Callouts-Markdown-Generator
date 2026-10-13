@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -24,7 +24,6 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.7;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:900;opacity:0.5}
 
-/* ── HEADER ── */
 header{border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;background:rgba(14,14,17,0.9);backdrop-filter:blur(16px);z-index:200;display:flex;align-items:center;justify-content:space-between;height:60px}
 .logo{font-family:'Instrument Serif',serif;font-size:20px;letter-spacing:-0.02em;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:10px;cursor:pointer}
 .logo-dot{width:8px;height:8px;background:var(--tip);border-radius:50%;display:inline-block;animation:pulse 2s ease infinite}
@@ -33,17 +32,14 @@ nav a{color:var(--text2);text-decoration:none;font-size:13px;padding:6px 14px;bo
 nav a:hover{color:var(--text);background:var(--bg3)}
 nav a.nav-active{color:var(--text);background:var(--bg3);font-weight:500}
 
-/* ── PÁGINAS ── */
 .page{display:none}
 .page.active{display:block}
 
-/* ── ANIMACIONES ── */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
 .reveal.visible{opacity:1;transform:none}
 
-/* ── HERO ── */
 .hero{padding:100px 2rem 80px;max-width:800px;margin:0 auto;text-align:center}
 .hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--text2);margin-bottom:28px;letter-spacing:0.04em;text-transform:uppercase;font-weight:500;animation:fadeUp 0.6s ease both}
 .hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--tip);animation:pulse 2s ease infinite}
@@ -58,7 +54,6 @@ h1 em{font-style:italic;color:var(--text2)}
 .btn-secondary:hover{background:var(--bg3)}
 .glow-line{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--border2) 30%,var(--border2) 70%,transparent)}
 
-/* ── SECCIONES ── */
 .section{max-width:1100px;margin:0 auto;padding:80px 2rem}
 .section-header{margin-bottom:48px}
 .section-label{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:10px;font-weight:500}
@@ -66,7 +61,6 @@ h2{font-family:'Instrument Serif',serif;font-size:clamp(30px,5vw,42px);letter-sp
 h2+p{color:var(--text2);font-weight:300;margin-top:12px;max-width:560px}
 .divider{border:none;border-top:1px solid var(--border);margin:0}
 
-/* ── CALLOUT CARDS ── */
 .callout-grid-5{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 .callout-card-big{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 20px 20px;cursor:pointer;transition:all 0.2s ease;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
 .callout-card-big:hover{transform:translateY(-3px);border-color:var(--border2)}
@@ -87,7 +81,6 @@ h2+p{color:var(--text2);font-weight:300;margin-top:12px;max-width:560px}
 .ccb-code{border-color:rgba(217,70,239,0.35)}.ccb-code .ccb-name{color:#d946ef}
 .ccb-list{border-color:rgba(20,184,166,0.35)}.ccb-list .ccb-name{color:#14b8a6}
 
-/* ── SINTAXIS ── */
 .syntax-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:640px){.syntax-grid{grid-template-columns:1fr}}
 .syntax-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px}
@@ -97,7 +90,6 @@ pre{background:var(--bg);border:1px solid var(--border);border-radius:8px;paddin
 code{font-family:'DM Mono',monospace;background:var(--bg3);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:0.9em;color:var(--text2)}
 .kw{color:#a78bfa}.str{color:#6ee7b7}.cm{color:#4b5563;font-style:italic}
 
-/* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s ease}
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:660px;max-height:90vh;overflow-y:auto;position:relative;transform:translateY(30px) scale(0.97);transition:transform 0.3s cubic-bezier(0.34,1.4,0.64,1),opacity 0.25s ease;opacity:0}
@@ -125,24 +117,18 @@ pre.modal-pre{padding:16px;font-family:'DM Mono',monospace;font-size:13px;line-h
 .modal-tip{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--text2);line-height:1.6}
 .modal-tip::before{content:'→';color:var(--text3);flex-shrink:0;margin-top:1px}
 
-/* ── TIPS CARDS ── */
 .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:40px}
 .tip-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
 .tip-card-num{font-family:'Instrument Serif',serif;font-size:32px;color:var(--text3);line-height:1;margin-bottom:10px}
 .tip-card h4{font-size:14px;font-weight:500;margin-bottom:6px}
 .tip-card p{font-size:13px;color:var(--text2);line-height:1.6}
 
-/* ── FOOTER ── */
 footer{border-top:1px solid var(--border);padding:40px 2rem;text-align:center;color:var(--text3);font-size:13px}
 footer a{color:var(--text3);text-decoration:underline;text-underline-offset:3px}
 footer a:hover{color:var(--text2)}
 
-/* ══════════════════════════════════════════
-   PÁGINA GENERADOR — layout sticky
-══════════════════════════════════════════ */
 .gen-page{min-height:calc(100vh - 60px);display:flex;flex-direction:column}
 
-/* Barra de botones arriba */
 .gen-toolbar{
   border-bottom:1px solid var(--border);
   background:var(--bg2);
@@ -167,9 +153,9 @@ footer a:hover{color:var(--text2)}
   white-space:nowrap;
 }
 .toolbar-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg3)}
+.toolbar-btn:active{transform:scale(0.97)}
 .toolbar-btn .tb-icon{font-size:14px}
 
-/* Layout principal del generador: editor | preview */
 .gen-main{
   flex:1;
   display:grid;
@@ -180,7 +166,6 @@ footer a:hover{color:var(--text2)}
 }
 @media(max-width:768px){.gen-main{grid-template-columns:1fr}}
 
-/* Panel izquierdo — editor */
 .gen-editor-panel{
   border-right:1px solid var(--border);
   display:flex;flex-direction:column;
@@ -204,7 +189,6 @@ footer a:hover{color:var(--text2)}
 }
 #genText::placeholder{color:var(--text3)}
 
-/* Panel derecho — preview */
 .gen-preview-panel{
   display:flex;flex-direction:column;
   background:var(--bg);
@@ -221,7 +205,6 @@ footer a:hover{color:var(--text2)}
 .copy-preview-btn{font-size:11px;padding:4px 10px;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s}
 .copy-preview-btn:hover{color:var(--text)}
 
-/* Área de preview — scroll interno propio */
 #genPreview{
   padding:24px;
   display:flex;flex-direction:column;
@@ -229,7 +212,6 @@ footer a:hover{color:var(--text2)}
   flex:1;overflow-y:auto;min-height:0;
 }
 
-/* Bloques de callout en preview */
 .prev-callout{
   border-left:4px solid;
   border-radius:0 8px 8px 0;
@@ -243,7 +225,6 @@ footer a:hover{color:var(--text2)}
 .prev-callout-title svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
 .prev-callout-body{font-size:14px;line-height:1.7;color:var(--text)}
 
-/* Texto normal en preview (Markdown renderizado) */
 .prev-text{font-size:14px;color:var(--text2);line-height:1.7}
 .prev-text h1,.prev-text h2,.prev-text h3,.prev-text h4{font-family:'Instrument Serif',serif;color:var(--text);line-height:1.2;margin:8px 0 4px}
 .prev-text h1{font-size:26px;letter-spacing:-0.02em;border-bottom:1px solid var(--border);padding-bottom:6px}
@@ -271,10 +252,8 @@ footer a:hover{color:var(--text2)}
 .prev-text th{background:var(--bg3);color:var(--text);font-weight:600}
 .prev-text tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
 
-/* empty state */
 .prev-empty{color:var(--text3);font-size:13px;font-style:italic;padding:20px 0;text-align:center}
 
-/* ── código limpio panel (pestaña) ── */
 .gen-code-panel{
   display:none;
   flex-direction:column;
@@ -288,7 +267,6 @@ footer a:hover{color:var(--text2)}
   flex:1;
 }
 
-/* tabs en topbar preview */
 .preview-tabs{display:flex;gap:2px}
 .preview-tab{font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;color:var(--text3);border:none;background:none;font-family:'DM Sans',sans-serif;transition:all 0.12s}
 .preview-tab:hover{color:var(--text2)}
@@ -307,7 +285,6 @@ footer a:hover{color:var(--text2)}
   </nav>
 </header>
 
-<!-- ══ PÁGINA: INICIO ══ -->
 <div class="page active" id="page-home">
   <section class="hero">
     <div class="hero-tag">Guía completa de Markdown</div>
@@ -319,7 +296,6 @@ footer a:hover{color:var(--text2)}
     </div>
   </section>
   <div class="glow-line"></div>
-  <!-- mini preview de los 5 tipos -->
   <div class="section" style="padding-top:60px">
     <div class="section-header">
       <div class="section-label">Los 5 tipos</div>
@@ -327,17 +303,16 @@ footer a:hover{color:var(--text2)}
       <p>Haz clic en cualquier tipo para ver la explicación completa.</p>
     </div>
     <div class="callout-grid-5">
-      <div class="callout-card-big ccb-note" onclick="openModal('NOTE')"><div class="ccb-icon">ℹ️</div><div class="ccb-name">NOTE</div><div class="ccb-desc">Información útil a tener en cuenta</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
-      <div class="callout-card-big ccb-tip" onclick="openModal('TIP')"><div class="ccb-icon">💡</div><div class="ccb-name">TIP</div><div class="ccb-desc">Consejo opcional de utilidad</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
-      <div class="callout-card-big ccb-important" onclick="openModal('IMPORTANT')"><div class="ccb-icon">📣</div><div class="ccb-name">IMPORTANT</div><div class="ccb-desc">Información crucial</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
-      <div class="callout-card-big ccb-warning" onclick="openModal('WARNING')"><div class="ccb-icon">⚠️</div><div class="ccb-name">WARNING</div><div class="ccb-desc">Riesgo potencial</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
-      <div class="callout-card-big ccb-caution" onclick="openModal('CAUTION')"><div class="ccb-icon">🔴</div><div class="ccb-name">CAUTION</div><div class="ccb-desc">Consecuencia negativa</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-note" onclick="openModal('NOTE')"><div class="ccb-icon">ℹ️</div><div class="ccb-name">NOTA</div><div class="ccb-desc">Información útil a tener en cuenta</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-tip" onclick="openModal('TIP')"><div class="ccb-icon">💡</div><div class="ccb-name">CONSEJO</div><div class="ccb-desc">Sugerencia opcional de utilidad</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-important" onclick="openModal('IMPORTANT')"><div class="ccb-icon">📣</div><div class="ccb-name">IMPORTANTE</div><div class="ccb-desc">Información crucial</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-warning" onclick="openModal('WARNING')"><div class="ccb-icon">⚠️</div><div class="ccb-name">ADVERTENCIA</div><div class="ccb-desc">Riesgo potencial</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-caution" onclick="openModal('CAUTION')"><div class="ccb-icon">🔴</div><div class="ccb-name">PRECAUCIÓN</div><div class="ccb-desc">Consecuencia negativa</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
     </div>
   </div>
   <footer><p>Basado en la <a href="https://github.com/orgs/community/discussions/16925" target="_blank">especificación de alertas de GitHub</a> y el plugin <a href="https://github.com/chrisweb/rehype-github-alerts" target="_blank">rehype-github-alerts</a>.</p></footer>
 </div>
 
-<!-- ══ PÁGINA: TIPOS ══ -->
 <div class="page" id="page-tipos">
   <div class="section">
     <div class="section-header reveal">
@@ -346,11 +321,11 @@ footer a:hover{color:var(--text2)}
       <p>Haz clic en cualquier tipo para ver su explicación completa, ejemplos y código.</p>
     </div>
     <div class="callout-grid-5 reveal">
-      <div class="callout-card-big ccb-note" onclick="openModal('NOTE')"><div class="ccb-icon">ℹ️</div><div class="ccb-name">NOTE</div><div class="ccb-desc">Información útil que el lector debería tener en cuenta</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
-      <div class="callout-card-big ccb-tip" onclick="openModal('TIP')"><div class="ccb-icon">💡</div><div class="ccb-name">TIP</div><div class="ccb-desc">Consejo opcional que puede mejorar la experiencia</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
-      <div class="callout-card-big ccb-important" onclick="openModal('IMPORTANT')"><div class="ccb-icon">📣</div><div class="ccb-name">IMPORTANT</div><div class="ccb-desc">Información crucial para que el proceso funcione</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
-      <div class="callout-card-big ccb-warning" onclick="openModal('WARNING')"><div class="ccb-icon">⚠️</div><div class="ccb-name">WARNING</div><div class="ccb-desc">Riesgo potencial que requiere atención inmediata</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
-      <div class="callout-card-big ccb-caution" onclick="openModal('CAUTION')"><div class="ccb-icon">🔴</div><div class="ccb-name">CAUTION</div><div class="ccb-desc">Consecuencia negativa si se realiza una acción incorrecta</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-note" onclick="openModal('NOTE')"><div class="ccb-icon">ℹ️</div><div class="ccb-name">NOTA</div><div class="ccb-desc">Información útil que el lector debería tener en cuenta</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-tip" onclick="openModal('TIP')"><div class="ccb-icon">💡</div><div class="ccb-name">CONSEJO</div><div class="ccb-desc">Consejo opcional que puede mejorar la experiencia</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-important" onclick="openModal('IMPORTANT')"><div class="ccb-icon">📣</div><div class="ccb-name">IMPORTANTE</div><div class="ccb-desc">Información crucial para que el proceso funcione</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-warning" onclick="openModal('WARNING')"><div class="ccb-icon">⚠️</div><div class="ccb-name">ADVERTENCIA</div><div class="ccb-desc">Riesgo potencial que requiere atención inmediata</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
+      <div class="callout-card-big ccb-caution" onclick="openModal('CAUTION')"><div class="ccb-icon">🔴</div><div class="ccb-name">PRECAUCIÓN</div><div class="ccb-desc">Consecuencia negativa si se realiza una acción incorrecta</div><div class="ccb-cta">Ver detalles <span>→</span></div></div>
     </div>
     <div style="height:48px"></div>
     <div class="section-header reveal">
@@ -369,13 +344,12 @@ footer a:hover{color:var(--text2)}
   <footer><p>Basado en la <a href="https://github.com/orgs/community/discussions/16925" target="_blank">especificación de alertas de GitHub</a>.</p></footer>
 </div>
 
-<!-- ══ PÁGINA: SINTAXIS ══ -->
 <div class="page" id="page-sintaxis">
   <div class="section">
     <div class="section-header reveal">
       <div class="section-label">Cómo escribirlos</div>
       <h2>La sintaxis paso a paso</h2>
-      <p>Los callouts usan la sintaxis de blockquote de Markdown, extendida con una etiqueta especial.</p>
+      <p>Los callouts usan la sintaxis de cita de bloque de Markdown, extendida con una etiqueta especial.</p>
     </div>
     <div class="syntax-grid reveal">
       <div class="syntax-card"><h3><span class="step">1</span> Estructura básica</h3><p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Comienza con <code>&gt;</code> seguido de <code>[!TIPO]</code>. El contenido va en las siguientes líneas con <code>&gt;</code>.</p><pre><span class="kw">&gt; [!NOTE]</span>  
@@ -395,40 +369,37 @@ footer a:hover{color:var(--text2)}
   <footer><p>Basado en la <a href="https://github.com/orgs/community/discussions/16925" target="_blank">especificación de alertas de GitHub</a>.</p></footer>
 </div>
 
-<!-- ══ PÁGINA: GENERADOR ══ -->
 <div class="page gen-page" id="page-generador">
 
-  <!-- Barra de herramientas sticky -->
   <div class="gen-toolbar">
     <span class="gen-toolbar-label">Callout:</span>
     <div class="gen-toolbar-group">
-      <button class="toolbar-btn" onclick="insertCallout('NOTE')"><span class="tb-icon">ℹ️</span>Note</button>
-      <button class="toolbar-btn" onclick="insertCallout('TIP')"><span class="tb-icon">💡</span>Tip</button>
-      <button class="toolbar-btn" onclick="insertCallout('IMPORTANT')"><span class="tb-icon">📣</span>Important</button>
-      <button class="toolbar-btn" onclick="insertCallout('WARNING')"><span class="tb-icon">⚠️</span>Warning</button>
-      <button class="toolbar-btn" onclick="insertCallout('CAUTION')"><span class="tb-icon">🔴</span>Caution</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('NOTE')"><span class="tb-icon">ℹ️</span>Nota</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('TIP')"><span class="tb-icon">💡</span>Consejo</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('IMPORTANT')"><span class="tb-icon">📣</span>Importante</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('WARNING')"><span class="tb-icon">⚠️</span>Advertencia</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('CAUTION')"><span class="tb-icon">🔴</span>Precaución</button>
     </div>
     <div class="gen-toolbar-sep"></div>
     <span class="gen-toolbar-label">Formato:</span>
     <div class="gen-toolbar-group">
-      <button class="toolbar-btn" onclick="insertFormat('HEADER')"><span class="tb-icon">#️⃣</span>Título</button>
-      <button class="toolbar-btn" onclick="insertFormat('DIVIDER')"><span class="tb-icon">➖</span>Línea</button>
-      <button class="toolbar-btn" onclick="insertFormat('BOLD')"><span class="tb-icon"><b style="font-size:12px">B</b></span>Negrita</button>
-      <button class="toolbar-btn" onclick="insertFormat('CODE')"><span class="tb-icon">💻</span>Código</button>
-      <button class="toolbar-btn" onclick="insertFormat('LIST')"><span class="tb-icon">📋</span>Lista</button>
-      <button class="toolbar-btn" onclick="insertFormat('CHECKLIST')"><span class="tb-icon">☑️</span>Checklist</button>
-      <button class="toolbar-btn" onclick="insertFormat('QUOTE')"><span class="tb-icon">❝</span>Cita</button>
-      <button class="toolbar-btn" onclick="insertFormat('STRIKE')"><span class="tb-icon">S̶</span>Tachado</button>
-      <button class="toolbar-btn" onclick="insertFormat('IMAGE')"><span class="tb-icon">🖼️</span>Imagen</button>
-      <button class="toolbar-btn" onclick="insertFormat('CODEBLOCK')"><span class="tb-icon">📄</span>Bloque código</button>
-      <button class="toolbar-btn" onclick="insertFormat('TABLE')"><span class="tb-icon">📊</span>Tabla</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('HEADER')"><span class="tb-icon">#️⃣</span>Título</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('DIVIDER')"><span class="tb-icon">➖</span>Línea</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('BOLD')"><span class="tb-icon"><b style="font-size:12px">B</b></span>Negrita</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('ITALIC')"><span class="tb-icon"><i style="font-size:12px">I</i></span>Cursiva</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('STRIKE')"><span class="tb-icon">S̶</span>Tachado</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CODE')"><span class="tb-icon">💻</span>Código</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('LIST')"><span class="tb-icon">📋</span>Lista</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CHECKLIST')"><span class="tb-icon">☑️</span>Checklist</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('QUOTE')"><span class="tb-icon">❝</span>Cita</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('IMAGE')"><span class="tb-icon">🖼️</span>Imagen</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CODEBLOCK')"><span class="tb-icon">📄</span>Bloque código</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('TABLE')"><span class="tb-icon">📊</span>Tabla</button>
     </div>
   </div>
 
-  <!-- Editor | Preview -->
   <div class="gen-main">
 
-    <!-- IZQUIERDA: Editor -->
     <div class="gen-editor-panel">
       <div class="gen-editor-topbar">
         <span class="gen-editor-topbar-label">Editor Markdown</span>
@@ -436,9 +407,9 @@ footer a:hover{color:var(--text2)}
           <button id="exitCalloutBtn" onclick="exitCallout()">Salir de callout 🚪</button>
           <input type="file" id="mdFileInput" accept=".md,.markdown,.txt" style="display:none" onchange="openMdFile(event)">
           <button class="copy-preview-btn" onclick="document.getElementById('mdFileInput').click()">📂 Abrir .md</button>
-          <button class="copy-preview-btn" onclick="resetGen()">↺ Reset</button>
+          <button class="copy-preview-btn" onclick="resetGen()">↺ Reiniciar</button>
           <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
-            <input type="checkbox" id="syncScrollChk" checked style="accent-color:var(--tip)"> Sync scroll
+            <input type="checkbox" id="syncScrollChk" checked style="accent-color:var(--tip)"> Sincronizar scroll
           </label>
         </div>
       </div>
@@ -453,7 +424,6 @@ Ejemplo:
 > Este es un consejo útil."></textarea>
     </div>
 
-    <!-- DERECHA: Preview -->
     <div class="gen-preview-panel" id="previewPanel">
       <div class="gen-preview-topbar">
         <div class="preview-tabs">
@@ -467,10 +437,8 @@ Ejemplo:
         </div>
       </div>
 
-      <!-- Preview visual -->
       <div id="genPreview" style="display:flex"></div>
 
-      <!-- Código limpio -->
       <div class="gen-code-panel" id="genCodePanel">
         <div class="gen-code-content" id="genCodeContent"></div>
       </div>
@@ -479,7 +447,6 @@ Ejemplo:
   </div>
 </div>
 
-<!-- ══ PÁGINA: CONSEJOS ══ -->
 <div class="page" id="page-consejos">
   <div class="section">
     <div class="section-header reveal">
@@ -488,7 +455,7 @@ Ejemplo:
     </div>
     <div class="tips-grid reveal">
       <div class="tip-card"><div class="tip-card-num">01</div><h4>No abuses de ellos</h4><p>Si todo es importante, nada lo es. Reserva los callouts para información realmente crítica o útil.</p></div>
-      <div class="tip-card"><div class="tip-card-num">02</div><h4>Elige el tipo correcto</h4><p>Usa <code>WARNING</code> y <code>CAUTION</code> solo cuando haya un riesgo real, no para información general.</p></div>
+      <div class="tip-card"><div class="tip-card-num">02</div><h4>Elige el tipo correcto</h4><p>Usa <code>ADVERTENCIA</code> y <code>PRECAUCIÓN</code> solo cuando haya un riesgo real, no para información general.</p></div>
       <div class="tip-card"><div class="tip-card-num">03</div><h4>Sé conciso</h4><p>Los callouts funcionan mejor con textos cortos y directos. Para contenido largo usa párrafos normales.</p></div>
       <div class="tip-card"><div class="tip-card-num">04</div><h4>Dos espacios al final</h4><p>Añade dos espacios al final de cada línea para crear saltos de línea explícitos en el renderizado.</p></div>
     </div>
@@ -496,7 +463,6 @@ Ejemplo:
   <footer><p>Basado en la <a href="https://github.com/orgs/community/discussions/16925" target="_blank">especificación de alertas de GitHub</a>.</p></footer>
 </div>
 
-<!-- ══ MODAL ══ -->
 <div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
   <div class="modal" id="modal">
     <button class="modal-close" onclick="closeModal()">✕</button>
@@ -515,7 +481,6 @@ Ejemplo:
 </div>
 
 <script>
-/* ── NAVEGACIÓN POR PÁGINAS ── */
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('nav a').forEach(a => a.classList.remove('nav-active'));
@@ -523,7 +488,6 @@ function showPage(id) {
   const navEl = document.getElementById('nav-' + id);
   if (navEl) navEl.classList.add('nav-active');
   window.scrollTo(0, 0);
-  // trigger reveals on new page
   setTimeout(() => {
     document.querySelectorAll('#page-' + id + ' .reveal').forEach(el => {
       observer.observe(el);
@@ -532,13 +496,12 @@ function showPage(id) {
 }
 function goHome() { showPage('home'); }
 
-/* ── DATOS ── */
 const TYPES = {
-  NOTE:{icon:'ℹ️',label:'Note',color:'#3b82f6',bg:'rgba(59,130,246,0.08)',border:'rgba(59,130,246,0.4)',subtitle:'Para información contextual útil',when:'Úsalo cuando quieras destacar información que el lector debería tener en cuenta aunque esté leyendo por encima. <strong>No implica peligro</strong>, solo es algo relevante que conviene no pasar por alto.',example:'Los archivos de configuración se guardan en la carpeta <code>/config</code> de tu proyecto.',tips:['Ideal para aclaraciones técnicas o detalles secundarios.','No lo uses si la información es crítica — en ese caso usa IMPORTANT.','Funciona bien al final de un paso para añadir contexto extra.'],code:'> [!NOTE]  \n> Los archivos de configuración se guardan\n> en la carpeta /config de tu proyecto.  '},
-  TIP:{icon:'💡',label:'Tip',color:'#10b981',bg:'rgba(16,185,129,0.08)',border:'rgba(16,185,129,0.4)',subtitle:'Para consejos y atajos opcionales',when:'Úsalo para compartir consejos <strong>opcionales</strong> que pueden mejorar la experiencia. Atajos, mejores prácticas o sugerencias de productividad.',example:'Puedes usar el atajo Ctrl+Shift+P para abrir la paleta de comandos rápidamente.',tips:['La palabra clave es "opcional": si es obligatorio, usa NOTE o IMPORTANT.','Perfecto para atajos de teclado, trucos de rendimiento o alternativas rápidas.','Evita usarlo para cosas que el usuario ya debería saber.'],code:'> [!TIP]  \n> Puedes usar Ctrl+Shift+P para abrir\n> la paleta de comandos rápidamente.  '},
-  IMPORTANT:{icon:'📣',label:'Important',color:'#a855f7',bg:'rgba(168,85,247,0.08)',border:'rgba(168,85,247,0.4)',subtitle:'Para información crucial sin la que el proceso falla',when:'Úsalo cuando la información sea <strong>necesaria para el éxito</strong> de la tarea. Sin ella el usuario podría cometer errores o el proceso no funcionará.',example:'Debes configurar las variables de entorno en el archivo .env antes de iniciar el servidor.',tips:['Si omitir esta información rompe el flujo, es IMPORTANT.','No lo uses para información general — reservalo para pasos obligatorios.','Aparece con más peso visual que NOTE, úsalo con criterio.'],code:'> [!IMPORTANT]  \n> Debes configurar las variables de entorno\n> en el archivo .env antes de iniciar.  '},
-  WARNING:{icon:'⚠️',label:'Warning',color:'#f59e0b',bg:'rgba(245,158,11,0.08)',border:'rgba(245,158,11,0.4)',subtitle:'Para riesgos que requieren atención inmediata',when:'Úsalo cuando exista un <strong>riesgo real</strong>: pérdida de datos, errores difíciles de revertir, o situaciones que pueden causar problemas graves.',example:'Esta operación eliminará permanentemente todos los registros. Haz una copia de seguridad antes.',tips:['Reservalo para riesgos reales: pérdida de datos, seguridad, comportamiento destructivo.','Si el riesgo es menor o reversible, considera usar NOTE o IMPORTANT.','Sé específico: dile al usuario exactamente qué puede salir mal.'],code:'> [!WARNING]  \n> Esta operación eliminará todos los registros.\n> Haz una copia de seguridad antes de continuar.  '},
-  CAUTION:{icon:'🔴',label:'Caution',color:'#ef4444',bg:'rgba(239,68,68,0.08)',border:'rgba(239,68,68,0.4)',subtitle:'Para consecuencias negativas directas de una acción',when:'Similar a WARNING pero más enfocado en las <strong>consecuencias negativas directas</strong> de hacer algo mal.',example:'Modificar este archivo manualmente puede corromper la base de datos y requerir una restauración completa.',tips:['Diferencia clave con WARNING: CAUTION describe la consecuencia de una acción específica.','Úsalo cuando quieras decir "si haces X, pasará Y (malo)".','Es el tipo más severo — no lo uses en exceso o perderá impacto.'],code:'> [!CAUTION]  \n> Modificar este archivo puede corromper\n> la base de datos y requerir restauración.  '},
+  NOTE:{icon:'ℹ️',label:'Nota',color:'#3b82f6',bg:'rgba(59,130,246,0.08)',border:'rgba(59,130,246,0.4)',subtitle:'Para información contextual útil',when:'Úsalo cuando quieras destacar información que el lector debería tener en cuenta aunque esté leyendo por encima. <strong>No implica peligro</strong>, solo es algo relevante que conviene no pasar por alto.',example:'Los archivos de configuración se guardan en la carpeta <code>/config</code> de tu proyecto.',tips:['Ideal para aclaraciones técnicas o detalles secundarios.','No lo uses si la información es crítica — en ese caso usa IMPORTANTE.','Funciona bien al final de un paso para añadir contexto extra.'],code:'> [!NOTE]  \n> Los archivos de configuración se guardan\n> en la carpeta /config de tu proyecto.  '},
+  TIP:{icon:'💡',label:'Consejo',color:'#10b981',bg:'rgba(16,185,129,0.08)',border:'rgba(16,185,129,0.4)',subtitle:'Para consejos y atajos opcionales',when:'Úsalo para compartir consejos <strong>opcionales</strong> que pueden mejorar la experiencia. Atajos, mejores prácticas o sugerencias de productividad.',example:'Puedes usar el atajo Ctrl+Shift+P para abrir la paleta de comandos rápidamente.',tips:['La palabra clave es "opcional": si es obligatorio, usa NOTA o IMPORTANTE.','Perfecto para atajos de teclado, trucos de rendimiento o alternativas rápidas.','Evita usarlo para cosas que el usuario ya debería saber.'],code:'> [!TIP]  \n> Puedes usar Ctrl+Shift+P para abrir\n> la paleta de comandos rápidamente.  '},
+  IMPORTANT:{icon:'📣',label:'Importante',color:'#a855f7',bg:'rgba(168,85,247,0.08)',border:'rgba(168,85,247,0.4)',subtitle:'Para información crucial sin la que el proceso falla',when:'Úsalo cuando la información sea <strong>necesaria para el éxito</strong> de la tarea. Sin ella el usuario podría cometer errores o el proceso no funcionará.',example:'Debes configurar las variables de entorno en el archivo .env antes de iniciar el servidor.',tips:['Si omitir esta información rompe el flujo, es IMPORTANTE.','No lo uses para información general — reservalo para pasos obligatorios.','Aparece con más peso visual que NOTA, úsalo con criterio.'],code:'> [!IMPORTANT]  \n> Debes configurar las variables de entorno\n> en el archivo .env antes de iniciar.  '},
+  WARNING:{icon:'⚠️',label:'Advertencia',color:'#f59e0b',bg:'rgba(245,158,11,0.08)',border:'rgba(245,158,11,0.4)',subtitle:'Para riesgos que requieren atención inmediata',when:'Úsalo cuando exista un <strong>riesgo real</strong>: pérdida de datos, errores difíciles de revertir, o situaciones que pueden causar problemas graves.',example:'Esta operación eliminará permanentemente todos los registros. Haz una copia de seguridad antes.',tips:['Reservalo para riesgos reales: pérdida de datos, seguridad, comportamiento destructivo.','Si el riesgo es menor o reversible, considera usar NOTA o IMPORTANTE.','Sé específico: dile al usuario exactamente qué puede salir mal.'],code:'> [!WARNING]  \n> Esta operación eliminará todos los registros.\n> Haz una copia de seguridad antes de continuar.  '},
+  CAUTION:{icon:'🔴',label:'Precaución',color:'#ef4444',bg:'rgba(239,68,68,0.08)',border:'rgba(239,68,68,0.4)',subtitle:'Para consecuencias negativas directas de una acción',when:'Similar a ADVERTENCIA pero más enfocado en las <strong>consecuencias negativas directas</strong> de hacer algo mal.',example:'Modificar este archivo manualmente puede corromper la base de datos y requerir una restauración completa.',tips:['Diferencia clave con ADVERTENCIA: PRECAUCIÓN describe la consecuencia de una acción específica.','Úsalo cuando quieras decir "si haces X, pasará Y (malo)".','Es el tipo más severo — no lo uses en exceso o perderá impacto.'],code:'> [!CAUTION]  \n> Modificar este archivo puede corromper\n> la base de datos y requerir restauración.  '},
   HEADER:{icon:'#️⃣',label:'Encabezados',color:'#6366f1',bg:'transparent',border:'transparent',subtitle:'Para estructurar el documento en secciones',when:'Úsalos para dividir tu documento en secciones lógicas con el carácter <code>#</code> al inicio de una línea.',example:'<div class="prev-text"><h1>Título H1</h1><h2>Subtítulo H2</h2><h3>Sección H3</h3></div>',tips:['Usa un solo H1 (#) por documento como título principal.','Sigue una jerarquía lógica: no saltes de H1 a H3 sin pasar por H2.','No abuses de títulos grandes, ayudan a la lectura si se usan bien.'],code:'# Título Principal H1\n\n## Subtítulo H2\n\n### Sección H3'},
   DIVIDER:{icon:'➖',label:'Separadores',color:'#9a9690',bg:'transparent',border:'transparent',subtitle:'Para separar secciones visualmente',when:'Crea una línea horizontal divisoria con tres guiones <code>---</code> en una línea vacía.',example:'<div class="prev-text"><p>Párrafo anterior.</p><hr><p>Párrafo posterior.</p></div>',tips:['Se escribe con tres guiones <code>---</code> en una línea vacía.','Deja una línea vacía antes y después.','Evita usar demasiados separadores seguidos.'],code:'Texto anterior.\n\n---\n\nTexto posterior.'},
   BOLD:{icon:'B',label:'Negrita',color:'#f59e0b',bg:'transparent',border:'transparent',subtitle:'Para enfatizar palabras clave o frases importantes',when:'Úsalo cuando quieras destacar palabras o conceptos clave dentro de un párrafo.',example:'<div class="prev-text"><p>Este texto contiene <strong>palabras importantes en negrita</strong>.</p></div>',tips:['Se escribe rodeando el texto con dos asteriscos <code>**texto**</code>.','No pongas párrafos enteros en negrita; pierde su efectividad.','Combínalo con cursiva usando tres asteriscos <code>***negrita y cursiva***</code>.'],code:'Este texto contiene **palabras importantes en negrita**.'},
@@ -558,7 +521,6 @@ let currentModalCode = '';
 let currentGenTab = 'preview';
 let cleanCode = '';
 
-/* ── MODAL ── */
 function openModal(type) {
   const t = TYPES[type];
   document.getElementById('mIcon').textContent = t.icon;
@@ -590,43 +552,60 @@ function handleOverlayClick(e){if(e.target===document.getElementById('modalOverl
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 function copyModalCode(){navigator.clipboard.writeText(currentModalCode).then(()=>{const b=document.querySelector('.modal-code-copy');b.textContent='✓ Copiado';setTimeout(()=>b.textContent='Copiar',1800);});}
 
-/* ── GENERADOR ──
-   BUG RAÍZ: al hacer clic en un botón, el textarea pierde el foco
-   y el navegador resetea selectionStart/End a 0 ANTES de que onclick se dispare.
-   SOLUCIÓN: guardamos s/e en mousedown (cuando la selección aún existe)
-   y los usamos en insert* en lugar de leer ta.selectionStart/End.
-──────────────────────────────────────────────────────────────────── */
-let _sel = { s: 0, e: 0 };
+/* ══════════════════════════════════════════════════════════════
+   FIX DEFINITIVO:
+   - Ignorar la línea "[!TIPO]" del callout (nunca hay que tocarla)
+   - Meter el ** DENTRO de cada línea, DESPUÉS del "> "
+   - Aplicar a TODOS los botones de formato
+══════════════════════════════════════════════════════════════ */
 
-function _captureSel() {
-  const ta = document.getElementById('genText');
-  if (ta) { _sel.s = ta.selectionStart; _sel.e = ta.selectionEnd; }
+// Detecta si una línea es la cabecera de un callout:  "> [!NOTE]" etc.
+function isCalloutHeader(line) {
+  return /^\s*>?\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*$/i.test(line);
 }
 
-// Adjuntar captura a todos los botones del toolbar en cuanto el DOM esté listo
-(function attachSelCapture() {
-  function doAttach() {
-    document.querySelectorAll('.toolbar-btn').forEach(btn => {
-      btn.addEventListener('mousedown', _captureSel);
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', doAttach);
-  } else {
-    doAttach();
-  }
-})();
+// Aplica un wrapper inline a cada línea, respetando prefijos de bloque
+// (>, -, #, - [ ], 1., etc.) y saltándose las cabeceras de callout.
+function wrapInlinePerLine(sel, before, after) {
+  return sel.split('\n').map(line => {
+    // No tocar la cabecera del callout
+    if (isCalloutHeader(line)) return line;
+    // No tocar líneas vacías
+    if (line.trim() === '') return line;
+
+    // Detectar prefijo de bloque: >, > , -, *, +, #, ##, - [ ], 1.
+    const m = line.match(/^(\s*(?:>\s*|[-*+]\s+\[[ xX]\]\s+|[-*+]\s+|\d+\.\s+|#{1,6}\s+)+)(.*)$/);
+    if (m) {
+      const prefix = m[1];
+      const body = m[2];
+      if (body.trim() === '') return line;
+      return prefix + before + body + after;
+    }
+    return before + line + after;
+  }).join('\n');
+}
+
+// Añade un prefijo a cada línea respetando > de callout. NO toca cabeceras de callout.
+function prefixPerLine(sel, prefix) {
+  return sel.split('\n').map(line => {
+    if (isCalloutHeader(line)) return line;
+    if (line.trim() === '') return line;
+    const m = line.match(/^(\s*>+\s*)/);
+    if (m) return m[1] + prefix + line.slice(m[1].length);
+    return prefix + line;
+  }).join('\n');
+}
 
 function insertCallout(type) {
   const ta = document.getElementById('genText');
-  const s = _sel.s, e = _sel.e;
+  const s = ta.selectionStart, e = ta.selectionEnd;
   const sel = ta.value.substring(s, e).trim();
   const antes = ta.value.substring(0, s);
   const despues = ta.value.substring(e);
 
   let tpl;
   if (sel) {
-    const lineas = sel.split('\n').map(l => '> ' + l.trim()).join('\n');
+    const lineas = sel.split('\n').map(l => '> ' + l).join('\n');
     tpl = '\n> [!' + type + ']  \n' + lineas + '\n';
   } else {
     tpl = '\n> [!' + type + ']  \n> Tu texto aquí...\n';
@@ -646,55 +625,88 @@ function insertCallout(type) {
 
 function insertFormat(type) {
   const ta = document.getElementById('genText');
-  const s = _sel.s, e = _sel.e;
+  const s = ta.selectionStart, e = ta.selectionEnd;
   const sel = ta.value.substring(s, e);
   const antes = ta.value.substring(0, s);
   const despues = ta.value.substring(e);
 
+  if (s === e && type !== 'DIVIDER' && type !== 'TABLE') {
+    ta.focus();
+    return;
+  }
+
   let tpl = '', cs = 0, ce = 0;
 
-  if (type === 'HEADER') {
-    const c = sel || 'Título';
-    tpl = '\n# ' + c + '\n';
-    cs = s + 3; ce = s + 3 + c.length;
+  if (type === 'BOLD') {
+    tpl = wrapInlinePerLine(sel, '**', '**');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'ITALIC') {
+    tpl = wrapInlinePerLine(sel, '*', '*');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'STRIKE') {
+    tpl = wrapInlinePerLine(sel, '~~', '~~');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'CODE') {
+    tpl = wrapInlinePerLine(sel, '`', '`');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'HEADER') {
+    tpl = prefixPerLine(sel, '# ');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'LIST') {
+    tpl = prefixPerLine(sel, '- ');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'CHECKLIST') {
+    tpl = prefixPerLine(sel, '- [ ] ');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'QUOTE') {
+    // Envolver en cita: cada línea con >, sin duplicar si ya había >
+    tpl = sel.split('\n').map(line => {
+      if (isCalloutHeader(line)) return line;
+      if (line.trim() === '') return line;
+      return '> ' + line.replace(/^>\s*/, '');
+    }).join('\n');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'IMAGE') {
+    tpl = sel.split('\n').map(line => {
+      if (isCalloutHeader(line)) return line;
+      if (line.trim() === '') return line;
+      const m = line.match(/^(\s*>+\s*)/);
+      const pre = m ? m[1] : '';
+      const body = m ? line.slice(m[1].length) : line;
+      return pre + '![' + body + '](https://url-imagen.png)';
+    }).join('\n');
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'CODEBLOCK') {
+    // Si estamos en callout, cada línea del bloque va con > delante
+    const firstPrefixMatch = sel.match(/^(\s*>+\s*)/);
+    const pre = firstPrefixMatch ? firstPrefixMatch[1] : '';
+    const body = sel.split('\n').map(l => l.replace(/^>\s?/, '')).join('\n');
+    if (pre) {
+      tpl = ('```js\n' + body + '\n```').split('\n').map(l => pre + l).join('\n');
+    } else {
+      tpl = '```js\n' + body + '\n```';
+    }
+    cs = s; ce = s + tpl.length;
   } else if (type === 'DIVIDER') {
     tpl = '\n---\n';
     cs = s + tpl.length; ce = cs;
-  } else if (type === 'BOLD') {
-    const c = sel || 'texto';
-    tpl = '**' + c + '**';
-    cs = s + 2; ce = s + 2 + c.length;
-  } else if (type === 'CODE') {
-    const c = sel || 'código';
-    tpl = '`' + c + '`';
-    cs = s + 1; ce = s + 1 + c.length;
-  } else if (type === 'LIST') {
-    const c = sel || 'Elemento';
-    tpl = '\n- ' + c + '\n';
-    cs = s + 3; ce = s + 3 + c.length;
-  } else if (type === 'CHECKLIST') {
-    const c = sel || 'Tarea';
-    tpl = '\n- [ ] ' + c + '\n';
-    cs = s + 7; ce = s + 7 + c.length;
-  } else if (type === 'QUOTE') {
-    const c = sel || 'Cita';
-    tpl = '\n> ' + c + '\n';
-    cs = s + 3; ce = s + 3 + c.length;
-  } else if (type === 'STRIKE') {
-    const c = sel || 'texto';
-    tpl = '~~' + c + '~~';
-    cs = s + 2; ce = s + 2 + c.length;
-  } else if (type === 'IMAGE') {
-    const alt = sel || 'descripción';
-    tpl = '\n![' + alt + '](https://url-imagen.png)\n';
-    const ui = tpl.indexOf('(') + 1;
-    cs = s + ui; ce = s + tpl.length - 2;
-  } else if (type === 'CODEBLOCK') {
-    const c = sel || 'código';
-    tpl = '\n```js\n' + c + '\n```\n';
-    cs = s + 5; ce = s + 5 + c.length;
   } else if (type === 'TABLE') {
-    tpl = '\n| Col A | Col B |\n| --- | --- |\n| valor 1 | valor 2 |\n';
+    const filas = sel.split('\n').filter(l => l.trim() !== '' && !isCalloutHeader(l));
+    if (filas.length) {
+      const firstCells = filas[0].split('|').map(c=>c.trim()).filter(c=>c!=='');
+      const cols = Math.max(1, firstCells.length || 2);
+      const cabecera = '| ' + Array.from({length: cols}, (_, i) => 'Col ' + (i+1)).join(' | ') + ' |';
+      const sep = '| ' + Array.from({length: cols}, () => '---').join(' | ') + ' |';
+      const cuerpo = filas.map(f => {
+        const cells = f.includes('|')
+          ? f.split('|').map(c=>c.trim()).filter(c=>c!=='')
+          : f.split(/\s{2,}|\t/).map(c=>c.trim()).filter(c=>c);
+        return '| ' + cells.join(' | ') + ' |';
+      }).join('\n');
+      tpl = '\n' + cabecera + '\n' + sep + '\n' + cuerpo + '\n';
+    } else {
+      tpl = '\n| Col A | Col B |\n| --- | --- |\n| valor 1 | valor 2 |\n';
+    }
     cs = s + tpl.length; ce = cs;
   }
 
@@ -762,7 +774,6 @@ document.getElementById('genText').addEventListener('keydown',function(e){
   const lastNL=val.lastIndexOf('\n',s-1);
   const curLine=val.substring(lastNL+1,s);
 
-  // continuar tabla: si la línea actual es una fila de tabla "| a | b |"
   if(/^\|.+\|\s*$/.test(curLine.trim()) && !/^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?$/.test(curLine.trim())){
     e.preventDefault();
     const seguir=confirm('¿Añadir otra fila a la tabla?');
@@ -793,36 +804,23 @@ document.getElementById('genText').addEventListener('keydown',function(e){
   updateGen();
 });
 
-function safeHTML(str){
-  // Renderiza el texto del callout con Markdown inline (negrita, cursiva, código, etc.)
-  return renderInline(str).replace(/\n/g,'<br>');
-}
-
-// Escapa SOLO los caracteres HTML peligrosos, sin tocar *, _, ~, ` que usa Markdown
 function escHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// Renderiza Markdown inline: negrita, cursiva, tachado, código, links, imágenes
 function renderInline(l){
-  // Primero proteger los bloques de código inline para no procesarlos
   const codeSlots = [];
   let s = l.replace(/`([^`]+)`/g, (_, c) => {
     codeSlots.push('<code>' + escHTML(c) + '</code>');
     return '\x00CODE' + (codeSlots.length-1) + '\x00';
   });
-  // Escapar HTML (ahora que el código está protegido)
   s = escHTML(s);
-  // Imágenes y links
   s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" style="max-width:100%">');
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
-  // Negrita **texto** o __texto__
+  s = s.replace(/\*\*\*([^*]+)\*\*\*/g,'<strong><em>$1</em></strong>');
   s = s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
   s = s.replace(/__([^_]+)__/g,'<strong>$1</strong>');
-  // Tachado ~~texto~~
   s = s.replace(/~~([^~]+)~~/g,'<del>$1</del>');
-  // Cursiva *texto* o _texto_ (solo si no forma parte de **)
-  s = s.replace(/(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/g,'<em>$1</em>');
-  s = s.replace(/(?<!_)_(?!_)([^_]+)(?<!_)_(?!_)/g,'<em>$1</em>');
-  // Restaurar código inline
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,'$1<em>$2</em>');
+  s = s.replace(/(^|[^_])_([^_\n]+)_(?!_)/g,'$1<em>$2</em>');
   s = s.replace(/\x00CODE(\d+)\x00/g, (_, i) => codeSlots[+i]);
   return s;
 }
@@ -835,7 +833,6 @@ function renderMD(text){
   for(let i=0;i<lines.length;i++){
     const raw=lines[i],t=raw.trim();
 
-    // fences de código ```lang ... ```
     const fence=t.match(/^```(.*)$/);
     if(fence){
       if(!inCode){closeLists();inCode=true;codeLang=fence[1].trim();codeBuf=[];}
@@ -844,7 +841,6 @@ function renderMD(text){
     }
     if(inCode){codeBuf.push(raw);continue;}
 
-    // tabla: fila con | y siguiente fila separadora ---|---
     if(/^\|.+\|$/.test(t) && lines[i+1] && /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?$/.test(lines[i+1].trim())){
       closeLists();
       const headCells=t.slice(1,-1).split('|').map(c=>c.trim());
@@ -982,7 +978,6 @@ const genText=document.getElementById('genText');
 genText.addEventListener('keyup',checkCursorContext);
 genText.addEventListener('click',checkCursorContext);
 
-/* ── SCROLL REVEAL ── */
 const observer=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}});
 },{threshold:0.1});
