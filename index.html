@@ -622,22 +622,75 @@ function insertCallout(type){
 }
 function insertFormat(type){
   const ta=document.getElementById('genText');
-  const s=ta.selectionStart,e=ta.selectionEnd;
+  const s=ta.selectionStart, e=ta.selectionEnd;
+  // sel: texto que el usuario tiene seleccionado (puede ser vacío)
   const sel=ta.value.substring(s,e);
-  let tpl='',ss=0,se=0;
-  if(type==='HEADER'){tpl=`\n# ${sel||'Título'}\n`;ss=3;se=tpl.length-1;}
-  else if(type==='DIVIDER'){tpl=`\n---\n`;ss=tpl.length;se=tpl.length;}
-  else if(type==='BOLD'){tpl=`**${sel||'texto'}**`;ss=2;se=tpl.length-2;}
-  else if(type==='CODE'){tpl=`\`${sel||'código'}\``;ss=1;se=tpl.length-1;}
-  else if(type==='LIST'){tpl=`\n- ${sel||'Elemento'}\n`;ss=3;se=tpl.length-1;}
-  else if(type==='CHECKLIST'){tpl=`\n- [ ] ${sel||'Tarea'}\n`;ss=7;se=tpl.length-1;}
-  else if(type==='QUOTE'){tpl=`\n> ${sel||'Cita'}\n`;ss=3;se=tpl.length-1;}
-  else if(type==='STRIKE'){tpl=`~~${sel||'texto'}~~`;ss=2;se=tpl.length-2;}
-  else if(type==='IMAGE'){tpl=`\n![${sel||'alt'}](https://url-imagen.png)\n`;ss=tpl.indexOf('(')+1;se=tpl.length-2;}
-  else if(type==='CODEBLOCK'){tpl=`\n\`\`\`js\n${sel||'código'}\n\`\`\`\n`;ss=5;se=5+(sel||'código').length;}
-  else if(type==='TABLE'){tpl=`\n| Col A | Col B |\n| --- | --- |\n| valor 1 | valor 2 |\n`;ss=tpl.length;se=tpl.length;}
-  ta.value=ta.value.substring(0,s)+tpl+ta.value.substring(e);
-  ta.focus();ta.selectionStart=s+ss;ta.selectionEnd=s+se;
+  // antes: texto antes de la selección; despues: texto DESPUÉS (nunca se toca lo seleccionado)
+  const antes=ta.value.substring(0,s);
+  const despues=ta.value.substring(e); // <-- usa e, no s, así preservamos el resto del texto
+
+  let tpl='', cursorStart=0, cursorEnd=0;
+
+  if(type==='HEADER'){
+    const contenido=sel||'Título';
+    tpl=`\n# ${contenido}\n`;
+    cursorStart=s+3; cursorEnd=s+3+contenido.length;
+  }
+  else if(type==='DIVIDER'){
+    tpl=`\n---\n`;
+    cursorStart=s+tpl.length; cursorEnd=cursorStart;
+  }
+  else if(type==='BOLD'){
+    const contenido=sel||'texto';
+    tpl=`**${contenido}**`;
+    cursorStart=s+2; cursorEnd=s+2+contenido.length;
+  }
+  else if(type==='CODE'){
+    const contenido=sel||'código';
+    tpl=`\`${contenido}\``;
+    cursorStart=s+1; cursorEnd=s+1+contenido.length;
+  }
+  else if(type==='LIST'){
+    const contenido=sel||'Elemento';
+    tpl=`\n- ${contenido}\n`;
+    cursorStart=s+3; cursorEnd=s+3+contenido.length;
+  }
+  else if(type==='CHECKLIST'){
+    const contenido=sel||'Tarea';
+    tpl=`\n- [ ] ${contenido}\n`;
+    cursorStart=s+7; cursorEnd=s+7+contenido.length;
+  }
+  else if(type==='QUOTE'){
+    const contenido=sel||'Cita';
+    tpl=`\n> ${contenido}\n`;
+    cursorStart=s+3; cursorEnd=s+3+contenido.length;
+  }
+  else if(type==='STRIKE'){
+    const contenido=sel||'texto';
+    tpl=`~~${contenido}~~`;
+    cursorStart=s+2; cursorEnd=s+2+contenido.length;
+  }
+  else if(type==='IMAGE'){
+    const alt=sel||'descripción';
+    tpl=`\n![${alt}](https://url-imagen.png)\n`;
+    const urlStart=tpl.indexOf('(')+1;
+    cursorStart=s+urlStart; cursorEnd=s+tpl.length-2;
+  }
+  else if(type==='CODEBLOCK'){
+    const contenido=sel||'código';
+    tpl=`\n\`\`\`js\n${contenido}\n\`\`\`\n`;
+    cursorStart=s+5; cursorEnd=s+5+contenido.length;
+  }
+  else if(type==='TABLE'){
+    tpl=`\n| Col A | Col B |\n| --- | --- |\n| valor 1 | valor 2 |\n`;
+    cursorStart=s+tpl.length; cursorEnd=cursorStart;
+  }
+
+  // Reconstruye: antes + formato + despues (el texto seleccionado queda dentro del formato)
+  ta.value = antes + tpl + despues;
+  ta.focus();
+  ta.selectionStart=cursorStart;
+  ta.selectionEnd=cursorEnd;
   updateGen();
 }
 
