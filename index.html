@@ -593,10 +593,31 @@ function copyModalCode(){navigator.clipboard.writeText(currentModalCode).then(()
 /* ── GENERADOR ── */
 function insertCallout(type){
   const ta=document.getElementById('genText');
-  const tpl=`\n> [!${type}]  \n> Tu texto aquí...\n`;
   const s=ta.selectionStart,e=ta.selectionEnd;
+  const sel=ta.value.substring(s,e).trim();
+
+  let tpl;
+  if(sel){
+    // Hay texto seleccionado: cada línea del texto seleccionado se convierte en una línea del callout
+    const lineas=sel.split('\n').map(l=>`> ${l.trim()}`).join('\n');
+    tpl=`\n> [!${type}]  \n${lineas}\n`;
+  } else {
+    // Sin selección: inserta plantilla vacía
+    tpl=`\n> [!${type}]  \n> Tu texto aquí...\n`;
+  }
+
   ta.value=ta.value.substring(0,s)+tpl+ta.value.substring(e);
-  ta.focus();ta.selectionStart=ta.selectionEnd=s+tpl.length;
+  ta.focus();
+
+  if(sel){
+    // Deja el cursor al final del bloque insertado
+    ta.selectionStart=ta.selectionEnd=s+tpl.length;
+  } else {
+    // Selecciona "Tu texto aquí..." para que se pueda escribir encima
+    const inicio=s+tpl.indexOf('> Tu texto aquí...')+2;
+    ta.selectionStart=inicio;
+    ta.selectionEnd=inicio+18;
+  }
   updateGen();
 }
 function insertFormat(type){
