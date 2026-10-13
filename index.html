@@ -402,26 +402,26 @@ footer a:hover{color:var(--text2)}
   <div class="gen-toolbar">
     <span class="gen-toolbar-label">Callout:</span>
     <div class="gen-toolbar-group">
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('NOTE')"><span class="tb-icon">ℹ️</span>Note</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('TIP')"><span class="tb-icon">💡</span>Tip</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('IMPORTANT')"><span class="tb-icon">📣</span>Important</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('WARNING')"><span class="tb-icon">⚠️</span>Warning</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertCallout('CAUTION')"><span class="tb-icon">🔴</span>Caution</button>
+      <button class="toolbar-btn" onclick="insertCallout('NOTE')"><span class="tb-icon">ℹ️</span>Note</button>
+      <button class="toolbar-btn" onclick="insertCallout('TIP')"><span class="tb-icon">💡</span>Tip</button>
+      <button class="toolbar-btn" onclick="insertCallout('IMPORTANT')"><span class="tb-icon">📣</span>Important</button>
+      <button class="toolbar-btn" onclick="insertCallout('WARNING')"><span class="tb-icon">⚠️</span>Warning</button>
+      <button class="toolbar-btn" onclick="insertCallout('CAUTION')"><span class="tb-icon">🔴</span>Caution</button>
     </div>
     <div class="gen-toolbar-sep"></div>
     <span class="gen-toolbar-label">Formato:</span>
     <div class="gen-toolbar-group">
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('HEADER')"><span class="tb-icon">#️⃣</span>Título</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('DIVIDER')"><span class="tb-icon">➖</span>Línea</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('BOLD')"><span class="tb-icon"><b style="font-size:12px">B</b></span>Negrita</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CODE')"><span class="tb-icon">💻</span>Código</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('LIST')"><span class="tb-icon">📋</span>Lista</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CHECKLIST')"><span class="tb-icon">☑️</span>Checklist</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('QUOTE')"><span class="tb-icon">❝</span>Cita</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('STRIKE')"><span class="tb-icon">S̶</span>Tachado</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('IMAGE')"><span class="tb-icon">🖼️</span>Imagen</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CODEBLOCK')"><span class="tb-icon">📄</span>Bloque código</button>
-      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('TABLE')"><span class="tb-icon">📊</span>Tabla</button>
+      <button class="toolbar-btn" onclick="insertFormat('HEADER')"><span class="tb-icon">#️⃣</span>Título</button>
+      <button class="toolbar-btn" onclick="insertFormat('DIVIDER')"><span class="tb-icon">➖</span>Línea</button>
+      <button class="toolbar-btn" onclick="insertFormat('BOLD')"><span class="tb-icon"><b style="font-size:12px">B</b></span>Negrita</button>
+      <button class="toolbar-btn" onclick="insertFormat('CODE')"><span class="tb-icon">💻</span>Código</button>
+      <button class="toolbar-btn" onclick="insertFormat('LIST')"><span class="tb-icon">📋</span>Lista</button>
+      <button class="toolbar-btn" onclick="insertFormat('CHECKLIST')"><span class="tb-icon">☑️</span>Checklist</button>
+      <button class="toolbar-btn" onclick="insertFormat('QUOTE')"><span class="tb-icon">❝</span>Cita</button>
+      <button class="toolbar-btn" onclick="insertFormat('STRIKE')"><span class="tb-icon">S̶</span>Tachado</button>
+      <button class="toolbar-btn" onclick="insertFormat('IMAGE')"><span class="tb-icon">🖼️</span>Imagen</button>
+      <button class="toolbar-btn" onclick="insertFormat('CODEBLOCK')"><span class="tb-icon">📄</span>Bloque código</button>
+      <button class="toolbar-btn" onclick="insertFormat('TABLE')"><span class="tb-icon">📊</span>Tabla</button>
     </div>
   </div>
 
@@ -590,107 +590,118 @@ function handleOverlayClick(e){if(e.target===document.getElementById('modalOverl
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 function copyModalCode(){navigator.clipboard.writeText(currentModalCode).then(()=>{const b=document.querySelector('.modal-code-copy');b.textContent='✓ Copiado';setTimeout(()=>b.textContent='Copiar',1800);});}
 
-/* ── GENERADOR ── */
-function insertCallout(type){
-  const ta=document.getElementById('genText');
-  const s=ta.selectionStart,e=ta.selectionEnd;
-  const sel=ta.value.substring(s,e).trim();
+/* ── GENERADOR ──
+   BUG RAÍZ: al hacer clic en un botón, el textarea pierde el foco
+   y el navegador resetea selectionStart/End a 0 ANTES de que onclick se dispare.
+   SOLUCIÓN: guardamos s/e en mousedown (cuando la selección aún existe)
+   y los usamos en insert* en lugar de leer ta.selectionStart/End.
+──────────────────────────────────────────────────────────────────── */
+let _sel = { s: 0, e: 0 };
+
+function _captureSel() {
+  const ta = document.getElementById('genText');
+  if (ta) { _sel.s = ta.selectionStart; _sel.e = ta.selectionEnd; }
+}
+
+// Adjuntar captura a todos los botones del toolbar en cuanto el DOM esté listo
+(function attachSelCapture() {
+  function doAttach() {
+    document.querySelectorAll('.toolbar-btn').forEach(btn => {
+      btn.addEventListener('mousedown', _captureSel);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', doAttach);
+  } else {
+    doAttach();
+  }
+})();
+
+function insertCallout(type) {
+  const ta = document.getElementById('genText');
+  const s = _sel.s, e = _sel.e;
+  const sel = ta.value.substring(s, e).trim();
+  const antes = ta.value.substring(0, s);
+  const despues = ta.value.substring(e);
 
   let tpl;
-  if(sel){
-    // Hay texto seleccionado: cada línea del texto seleccionado se convierte en una línea del callout
-    const lineas=sel.split('\n').map(l=>`> ${l.trim()}`).join('\n');
-    tpl=`\n> [!${type}]  \n${lineas}\n`;
+  if (sel) {
+    const lineas = sel.split('\n').map(l => '> ' + l.trim()).join('\n');
+    tpl = '\n> [!' + type + ']  \n' + lineas + '\n';
   } else {
-    // Sin selección: inserta plantilla vacía
-    tpl=`\n> [!${type}]  \n> Tu texto aquí...\n`;
+    tpl = '\n> [!' + type + ']  \n> Tu texto aquí...\n';
   }
 
-  ta.value=ta.value.substring(0,s)+tpl+ta.value.substring(e);
+  ta.value = antes + tpl + despues;
   ta.focus();
-
-  if(sel){
-    // Deja el cursor al final del bloque insertado
-    ta.selectionStart=ta.selectionEnd=s+tpl.length;
+  if (sel) {
+    ta.selectionStart = ta.selectionEnd = s + tpl.length;
   } else {
-    // Selecciona "Tu texto aquí..." para que se pueda escribir encima
-    const inicio=s+tpl.indexOf('> Tu texto aquí...')+2;
-    ta.selectionStart=inicio;
-    ta.selectionEnd=inicio+18;
+    const ini = antes.length + tpl.indexOf('> Tu texto aquí...') + 2;
+    ta.selectionStart = ini;
+    ta.selectionEnd = ini + 18;
   }
   updateGen();
 }
-function insertFormat(type){
-  const ta=document.getElementById('genText');
-  const s=ta.selectionStart, e=ta.selectionEnd;
-  // sel: texto que el usuario tiene seleccionado (puede ser vacío)
-  const sel=ta.value.substring(s,e);
-  // antes: texto antes de la selección; despues: texto DESPUÉS (nunca se toca lo seleccionado)
-  const antes=ta.value.substring(0,s);
-  const despues=ta.value.substring(e); // <-- usa e, no s, así preservamos el resto del texto
 
-  let tpl='', cursorStart=0, cursorEnd=0;
+function insertFormat(type) {
+  const ta = document.getElementById('genText');
+  const s = _sel.s, e = _sel.e;
+  const sel = ta.value.substring(s, e);
+  const antes = ta.value.substring(0, s);
+  const despues = ta.value.substring(e);
 
-  if(type==='HEADER'){
-    const contenido=sel||'Título';
-    tpl=`\n# ${contenido}\n`;
-    cursorStart=s+3; cursorEnd=s+3+contenido.length;
-  }
-  else if(type==='DIVIDER'){
-    tpl=`\n---\n`;
-    cursorStart=s+tpl.length; cursorEnd=cursorStart;
-  }
-  else if(type==='BOLD'){
-    const contenido=sel||'texto';
-    tpl=`**${contenido}**`;
-    cursorStart=s+2; cursorEnd=s+2+contenido.length;
-  }
-  else if(type==='CODE'){
-    const contenido=sel||'código';
-    tpl=`\`${contenido}\``;
-    cursorStart=s+1; cursorEnd=s+1+contenido.length;
-  }
-  else if(type==='LIST'){
-    const contenido=sel||'Elemento';
-    tpl=`\n- ${contenido}\n`;
-    cursorStart=s+3; cursorEnd=s+3+contenido.length;
-  }
-  else if(type==='CHECKLIST'){
-    const contenido=sel||'Tarea';
-    tpl=`\n- [ ] ${contenido}\n`;
-    cursorStart=s+7; cursorEnd=s+7+contenido.length;
-  }
-  else if(type==='QUOTE'){
-    const contenido=sel||'Cita';
-    tpl=`\n> ${contenido}\n`;
-    cursorStart=s+3; cursorEnd=s+3+contenido.length;
-  }
-  else if(type==='STRIKE'){
-    const contenido=sel||'texto';
-    tpl=`~~${contenido}~~`;
-    cursorStart=s+2; cursorEnd=s+2+contenido.length;
-  }
-  else if(type==='IMAGE'){
-    const alt=sel||'descripción';
-    tpl=`\n![${alt}](https://url-imagen.png)\n`;
-    const urlStart=tpl.indexOf('(')+1;
-    cursorStart=s+urlStart; cursorEnd=s+tpl.length-2;
-  }
-  else if(type==='CODEBLOCK'){
-    const contenido=sel||'código';
-    tpl=`\n\`\`\`js\n${contenido}\n\`\`\`\n`;
-    cursorStart=s+5; cursorEnd=s+5+contenido.length;
-  }
-  else if(type==='TABLE'){
-    tpl=`\n| Col A | Col B |\n| --- | --- |\n| valor 1 | valor 2 |\n`;
-    cursorStart=s+tpl.length; cursorEnd=cursorStart;
+  let tpl = '', cs = 0, ce = 0;
+
+  if (type === 'HEADER') {
+    const c = sel || 'Título';
+    tpl = '\n# ' + c + '\n';
+    cs = s + 3; ce = s + 3 + c.length;
+  } else if (type === 'DIVIDER') {
+    tpl = '\n---\n';
+    cs = s + tpl.length; ce = cs;
+  } else if (type === 'BOLD') {
+    const c = sel || 'texto';
+    tpl = '**' + c + '**';
+    cs = s + 2; ce = s + 2 + c.length;
+  } else if (type === 'CODE') {
+    const c = sel || 'código';
+    tpl = '`' + c + '`';
+    cs = s + 1; ce = s + 1 + c.length;
+  } else if (type === 'LIST') {
+    const c = sel || 'Elemento';
+    tpl = '\n- ' + c + '\n';
+    cs = s + 3; ce = s + 3 + c.length;
+  } else if (type === 'CHECKLIST') {
+    const c = sel || 'Tarea';
+    tpl = '\n- [ ] ' + c + '\n';
+    cs = s + 7; ce = s + 7 + c.length;
+  } else if (type === 'QUOTE') {
+    const c = sel || 'Cita';
+    tpl = '\n> ' + c + '\n';
+    cs = s + 3; ce = s + 3 + c.length;
+  } else if (type === 'STRIKE') {
+    const c = sel || 'texto';
+    tpl = '~~' + c + '~~';
+    cs = s + 2; ce = s + 2 + c.length;
+  } else if (type === 'IMAGE') {
+    const alt = sel || 'descripción';
+    tpl = '\n![' + alt + '](https://url-imagen.png)\n';
+    const ui = tpl.indexOf('(') + 1;
+    cs = s + ui; ce = s + tpl.length - 2;
+  } else if (type === 'CODEBLOCK') {
+    const c = sel || 'código';
+    tpl = '\n```js\n' + c + '\n```\n';
+    cs = s + 5; ce = s + 5 + c.length;
+  } else if (type === 'TABLE') {
+    tpl = '\n| Col A | Col B |\n| --- | --- |\n| valor 1 | valor 2 |\n';
+    cs = s + tpl.length; ce = cs;
   }
 
-  // Reconstruye: antes + formato + despues (el texto seleccionado queda dentro del formato)
   ta.value = antes + tpl + despues;
   ta.focus();
-  ta.selectionStart=cursorStart;
-  ta.selectionEnd=cursorEnd;
+  ta.selectionStart = cs;
+  ta.selectionEnd = ce;
   updateGen();
 }
 
@@ -782,22 +793,44 @@ document.getElementById('genText').addEventListener('keydown',function(e){
   updateGen();
 });
 
-function safeHTML(str){return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function safeHTML(str){
+  // Renderiza el texto del callout con Markdown inline (negrita, cursiva, código, etc.)
+  return renderInline(str).replace(/\n/g,'<br>');
+}
+
+// Escapa SOLO los caracteres HTML peligrosos, sin tocar *, _, ~, ` que usa Markdown
+function escHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Renderiza Markdown inline: negrita, cursiva, tachado, código, links, imágenes
+function renderInline(l){
+  // Primero proteger los bloques de código inline para no procesarlos
+  const codeSlots = [];
+  let s = l.replace(/`([^`]+)`/g, (_, c) => {
+    codeSlots.push('<code>' + escHTML(c) + '</code>');
+    return '\x00CODE' + (codeSlots.length-1) + '\x00';
+  });
+  // Escapar HTML (ahora que el código está protegido)
+  s = escHTML(s);
+  // Imágenes y links
+  s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" style="max-width:100%">');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
+  // Negrita **texto** o __texto__
+  s = s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+  s = s.replace(/__([^_]+)__/g,'<strong>$1</strong>');
+  // Tachado ~~texto~~
+  s = s.replace(/~~([^~]+)~~/g,'<del>$1</del>');
+  // Cursiva *texto* o _texto_ (solo si no forma parte de **)
+  s = s.replace(/(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/g,'<em>$1</em>');
+  s = s.replace(/(?<!_)_(?!_)([^_]+)(?<!_)_(?!_)/g,'<em>$1</em>');
+  // Restaurar código inline
+  s = s.replace(/\x00CODE(\d+)\x00/g, (_, i) => codeSlots[+i]);
+  return s;
+}
 
 function renderMD(text){
   const lines=text.split('\n');let html='',inUl=false,inOl=false,inBq=false,inCode=false,codeBuf=[],codeLang='';
-  const esc=(s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const inline=(l)=>{
-    let s=esc(l);
-    s=s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1">');
-    s=s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
-    s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
-    s=s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
-    s=s.replace(/__([^_]+)__/g,'<strong>$1</strong>');
-    s=s.replace(/~~([^~]+)~~/g,'<del>$1</del>');
-    s=s.replace(/\*([^*]+)\*/g,'<em>$1</em>');
-    return s;
-  };
+  const esc=escHTML;
+  const inline=renderInline;
   const closeLists=()=>{if(inUl){html+='</ul>';inUl=false;}if(inOl){html+='</ol>';inOl=false;}if(inBq){html+='</blockquote>';inBq=false;}};
   for(let i=0;i<lines.length;i++){
     const raw=lines[i],t=raw.trim();
@@ -879,7 +912,7 @@ function updateGen(){
       div.className='prev-callout';
       div.style.borderLeftColor=t.color;
       div.style.background=t.bg;
-      div.innerHTML=`<div class="prev-callout-title" style="color:${t.color}">${OCTICONS[block.type]} ${t.label}</div><div class="prev-callout-body">${safeHTML(bodyText)}</div>`;
+      div.innerHTML=`<div class="prev-callout-title" style="color:${t.color}">${OCTICONS[block.type]} ${t.label}</div><div class="prev-callout-body">${renderMD(bodyText)}</div>`;
       preview.appendChild(div);
     } else {
       const normalText=block.lines.join('\n');
