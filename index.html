@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -388,6 +388,8 @@ footer a:hover{color:var(--text2)}
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('BOLD')"><span class="tb-icon"><b style="font-size:12px">B</b></span>Negrita</button>
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('ITALIC')"><span class="tb-icon"><i style="font-size:12px">I</i></span>Cursiva</button>
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('STRIKE')"><span class="tb-icon">S̶</span>Tachado</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('UPPER')"><span class="tb-icon">A</span>MAYÚS</button>
+      <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('LOWER')"><span class="tb-icon">a</span>minús</button>
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CODE')"><span class="tb-icon">💻</span>Código</button>
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('LIST')"><span class="tb-icon">📋</span>Lista</button>
       <button class="toolbar-btn" onmousedown="event.preventDefault()" onclick="insertFormat('CHECKLIST')"><span class="tb-icon">☑️</span>Checklist</button>
@@ -553,10 +555,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 function copyModalCode(){navigator.clipboard.writeText(currentModalCode).then(()=>{const b=document.querySelector('.modal-code-copy');b.textContent='✓ Copiado';setTimeout(()=>b.textContent='Copiar',1800);});}
 
 /* ══════════════════════════════════════════════════════════════
-   FIX DEFINITIVO:
-   - Ignorar la línea "[!TIPO]" del callout (nunca hay que tocarla)
-   - Meter el ** DENTRO de cada línea, DESPUÉS del "> "
-   - Aplicar a TODOS los botones de formato
+   UTILIDADES DE FORMATO
 ══════════════════════════════════════════════════════════════ */
 
 // Detecta si una línea es la cabecera de un callout:  "> [!NOTE]" etc.
@@ -568,12 +567,8 @@ function isCalloutHeader(line) {
 // (>, -, #, - [ ], 1., etc.) y saltándose las cabeceras de callout.
 function wrapInlinePerLine(sel, before, after) {
   return sel.split('\n').map(line => {
-    // No tocar la cabecera del callout
     if (isCalloutHeader(line)) return line;
-    // No tocar líneas vacías
     if (line.trim() === '') return line;
-
-    // Detectar prefijo de bloque: >, > , -, *, +, #, ##, - [ ], 1.
     const m = line.match(/^(\s*(?:>\s*|[-*+]\s+\[[ xX]\]\s+|[-*+]\s+|\d+\.\s+|#{1,6}\s+)+)(.*)$/);
     if (m) {
       const prefix = m[1];
@@ -596,26 +591,43 @@ function prefixPerLine(sel, prefix) {
   }).join('\n');
 }
 
+// Transforma el texto útil de cada línea en MAYÚSCULAS o minúsculas
+function changeCasePerLine(sel, upper) {
+  return sel.split('\n').map(line => {
+    if (isCalloutHeader(line)) return line;
+    if (line.trim() === '') return line;
+    const m = line.match(/^(\s*(?:>\s*|[-*+]\s+\[[ xX]\]\s+|[-*+]\s+|\d+\.\s+|#{1,6}\s+)+)(.*)$/);
+    if (m) return m[1] + (upper ? m[2].toUpperCase() : m[2].toLowerCase());
+    return upper ? line.toUpperCase() : line.toLowerCase();
+  }).join('\n');
+}
+
 function insertCallout(type) {
   const ta = document.getElementById('genText');
   const s = ta.selectionStart, e = ta.selectionEnd;
-  const sel = ta.value.substring(s, e).trim();
+  const sel = ta.value.substring(s, e);
   const antes = ta.value.substring(0, s);
   const despues = ta.value.substring(e);
 
   let tpl;
-  if (sel) {
-    const lineas = sel.split('\n').map(l => '> ' + l).join('\n');
-    tpl = '\n> [!' + type + ']  \n' + lineas + '\n';
+  if (sel.trim()) {
+    // Si la selección ya contiene un "[!TIPO]" lo reemplazamos por el nuevo
+    if (/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i.test(sel)) {
+      tpl = sel.replace(/\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i, '[!' + type + ']');
+      ta.value = antes + tpl + despues;
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = s + tpl.length;
+    } else {
+      const lineas = sel.split('\n').map(l => '> ' + l.replace(/^>\s?/, '')).join('\n');
+      tpl = '\n> [!' + type + ']  \n' + lineas + '\n';
+      ta.value = antes + tpl + despues;
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = s + tpl.length;
+    }
   } else {
     tpl = '\n> [!' + type + ']  \n> Tu texto aquí...\n';
-  }
-
-  ta.value = antes + tpl + despues;
-  ta.focus();
-  if (sel) {
-    ta.selectionStart = ta.selectionEnd = s + tpl.length;
-  } else {
+    ta.value = antes + tpl + despues;
+    ta.focus();
     const ini = antes.length + tpl.indexOf('> Tu texto aquí...') + 2;
     ta.selectionStart = ini;
     ta.selectionEnd = ini + 18;
@@ -649,6 +661,12 @@ function insertFormat(type) {
   } else if (type === 'CODE') {
     tpl = wrapInlinePerLine(sel, '`', '`');
     cs = s; ce = s + tpl.length;
+  } else if (type === 'UPPER') {
+    tpl = changeCasePerLine(sel, true);
+    cs = s; ce = s + tpl.length;
+  } else if (type === 'LOWER') {
+    tpl = changeCasePerLine(sel, false);
+    cs = s; ce = s + tpl.length;
   } else if (type === 'HEADER') {
     tpl = prefixPerLine(sel, '# ');
     cs = s; ce = s + tpl.length;
@@ -659,7 +677,6 @@ function insertFormat(type) {
     tpl = prefixPerLine(sel, '- [ ] ');
     cs = s; ce = s + tpl.length;
   } else if (type === 'QUOTE') {
-    // Envolver en cita: cada línea con >, sin duplicar si ya había >
     tpl = sel.split('\n').map(line => {
       if (isCalloutHeader(line)) return line;
       if (line.trim() === '') return line;
@@ -677,7 +694,6 @@ function insertFormat(type) {
     }).join('\n');
     cs = s; ce = s + tpl.length;
   } else if (type === 'CODEBLOCK') {
-    // Si estamos en callout, cada línea del bloque va con > delante
     const firstPrefixMatch = sel.match(/^(\s*>+\s*)/);
     const pre = firstPrefixMatch ? firstPrefixMatch[1] : '';
     const body = sel.split('\n').map(l => l.replace(/^>\s?/, '')).join('\n');
@@ -806,6 +822,7 @@ document.getElementById('genText').addEventListener('keydown',function(e){
 
 function escHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+/* ── Render inline (CORREGIDO) ── */
 function renderInline(l){
   const codeSlots = [];
   let s = l.replace(/`([^`]+)`/g, (_, c) => {
@@ -819,40 +836,55 @@ function renderInline(l){
   s = s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
   s = s.replace(/__([^_]+)__/g,'<strong>$1</strong>');
   s = s.replace(/~~([^~]+)~~/g,'<del>$1</del>');
-  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,'$1<em>$2</em>');
-  s = s.replace(/(^|[^_])_([^_\n]+)_(?!_)/g,'$1<em>$2</em>');
+  s = s.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
+  s = s.replace(/_([^_\n]+)_/g,'<em>$1</em>');
   s = s.replace(/\x00CODE(\d+)\x00/g, (_, i) => codeSlots[+i]);
   return s;
 }
 
+/* ── Render MD en bloque (CORREGIDO: tablas en callouts) ── */
 function renderMD(text){
-  const lines=text.split('\n');let html='',inUl=false,inOl=false,inBq=false,inCode=false,codeBuf=[],codeLang='';
+  const lines=text.split('\n');
+  let html='',inUl=false,inOl=false,inBq=false,inCode=false,codeBuf=[],codeLang='';
   const esc=escHTML;
   const inline=renderInline;
-  const closeLists=()=>{if(inUl){html+='</ul>';inUl=false;}if(inOl){html+='</ol>';inOl=false;}if(inBq){html+='</blockquote>';inBq=false;}};
-  for(let i=0;i<lines.length;i++){
-    const raw=lines[i],t=raw.trim();
+  const closeLists=()=>{
+    if(inUl){html+='</ul>';inUl=false;}
+    if(inOl){html+='</ol>';inOl=false;}
+    if(inBq){html+='</blockquote>';inBq=false;}
+  };
+  const stripQuote = (str) => str.replace(/^(\s*>\s*)+/, '');
 
-    const fence=t.match(/^```(.*)$/);
+  for(let i=0;i<lines.length;i++){
+    const raw=lines[i];
+    const t=raw.trim();
+    const clean = stripQuote(t);
+    const nextRaw = lines[i+1];
+    const nextClean = nextRaw ? stripQuote(nextRaw.trim()) : '';
+
+    const fence=clean.match(/^```(.*)$/);
     if(fence){
       if(!inCode){closeLists();inCode=true;codeLang=fence[1].trim();codeBuf=[];}
       else{html+=`<pre><code class="lang-${codeLang}">${esc(codeBuf.join('\n'))}</code></pre>`;inCode=false;}
       continue;
     }
-    if(inCode){codeBuf.push(raw);continue;}
+    if(inCode){codeBuf.push(raw.replace(/^>\s?/, ''));continue;}
 
-    if(/^\|.+\|$/.test(t) && lines[i+1] && /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?$/.test(lines[i+1].trim())){
+    if(/^\|.+\|$/.test(clean) && /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?$/.test(nextClean)){
       closeLists();
-      const headCells=t.slice(1,-1).split('|').map(c=>c.trim());
+      const headCells=clean.slice(1,-1).split('|').map(c=>c.trim());
       let rows=`<tr>${headCells.map(c=>`<th>${inline(c)}</th>`).join('')}</tr>`;
       i+=2;
-      while(i<lines.length && /^\|.+\|$/.test(lines[i].trim())){
-        const cells=lines[i].trim().slice(1,-1).split('|').map(c=>c.trim());
+      while(i<lines.length){
+        const c2 = stripQuote(lines[i].trim());
+        if(!/^\|.+\|$/.test(c2)) break;
+        const cells=c2.slice(1,-1).split('|').map(c=>c.trim());
         rows+=`<tr>${cells.map(c=>`<td>${inline(c)}</td>`).join('')}</tr>`;
         i++;
       }
       i--;
-      html+=`<table>${rows}</table>`;continue;
+      html+=`<table>${rows}</table>`;
+      continue;
     }
 
     if(/^(-{3,}|\*{3,}|_{3,})$/.test(t)){closeLists();html+='<hr>';continue;}
@@ -870,7 +902,8 @@ function renderMD(text){
     closeLists();html+=`<p>${inline(raw)}</p>`;
   }
   if(inCode)html+=`<pre><code>${esc(codeBuf.join('\n'))}</code></pre>`;
-  closeLists();return html;
+  closeLists();
+  return html;
 }
 
 function updateGen(){
@@ -959,20 +992,29 @@ function checkCursorContext(){
   const cur=val.substring(lastNL+1,nextNL===-1?val.length:nextNL);
   document.getElementById('exitCalloutBtn').style.display=cur.trim().startsWith('>')?'inline-block':'none';
 }
+
+/* ── Salir del callout (CORREGIDO: no mete saltos raros) ── */
 function exitCallout(){
-  const ta=document.getElementById('genText');
-  const s=ta.selectionStart,val=ta.value;
-  const lastNL=val.lastIndexOf('\n',s-1);
-  let nextNL=val.indexOf('\n',s);if(nextNL===-1)nextNL=val.length;
-  const cur=val.substring(lastNL+1,nextNL);
-  if(cur.trim()==='>'){
-    ta.value=val.substring(0,lastNL+1)+'\n'+val.substring(nextNL);
-    ta.selectionStart=ta.selectionEnd=lastNL+2;
+  const ta = document.getElementById('genText');
+  const s = ta.selectionStart, val = ta.value;
+  const lastNL = val.lastIndexOf('\n', s-1);
+  let nextNL = val.indexOf('\n', s);
+  if (nextNL === -1) nextNL = val.length;
+  const cur = val.substring(lastNL+1, nextNL);
+
+  if (cur.trim() === '>') {
+    ta.value = val.substring(0, lastNL+1) + val.substring(nextNL);
+    ta.selectionStart = ta.selectionEnd = lastNL+1;
   } else {
-    ta.value=val.substring(0,nextNL)+'\n\n'+val.substring(nextNL);
-    ta.selectionStart=ta.selectionEnd=nextNL+2;
+    const after = val.substring(nextNL);
+    const needsBlank = !after.startsWith('\n\n');
+    const insert = needsBlank ? '\n\n' : '\n';
+    ta.value = val.substring(0, nextNL) + insert + after;
+    ta.selectionStart = ta.selectionEnd = nextNL + insert.length;
   }
-  ta.focus();updateGen();checkCursorContext();
+  ta.focus();
+  updateGen();
+  checkCursorContext();
 }
 const genText=document.getElementById('genText');
 genText.addEventListener('keyup',checkCursorContext);
