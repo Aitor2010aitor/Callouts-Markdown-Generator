@@ -824,10 +824,20 @@ function escHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace
 
 /* ── Render inline (CORREGIDO) ── */
 function renderInline(l){
-  const codeSlots = [];
+  const codeSlots = [], imgSlots = [];
   let s = l.replace(/`([^`]+)`/g, (_, c) => {
     codeSlots.push('<code>' + escHTML(c) + '</code>');
     return '\x00CODE' + (codeSlots.length-1) + '\x00';
+  });
+  // <img ...> HTML crudo (como en READMEs de GitHub) → imagen segura
+  s = s.replace(/<img\b[^>]*>/gi, tag => {
+    const attr = n => { const m = tag.match(new RegExp('\\b'+n+'\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\')','i')); return m ? (m[1] ?? m[2]) : ''; };
+    const src = attr('src').trim();
+    if(!/^(https?:\/\/|data:image\/)/i.test(src)) return tag;
+    const w = attr('width').replace(/[^\d.%a-z]/gi,''), h = attr('height').replace(/[^\d.%a-z]/gi,'');
+    const q = v => escHTML(v).replace(/"/g,'&quot;');
+    imgSlots.push('<img src="'+q(src)+'" alt="'+q(attr('alt'))+'"'+(w?' width="'+w+'"':'')+(h?' height="'+h+'"':'')+' style="max-width:100%;height:auto">');
+    return '\x00IMG' + (imgSlots.length-1) + '\x00';
   });
   s = escHTML(s);
   s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" style="max-width:100%">');
@@ -839,6 +849,7 @@ function renderInline(l){
   s = s.replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
   s = s.replace(/_([^_\n]+)_/g,'<em>$1</em>');
   s = s.replace(/\x00CODE(\d+)\x00/g, (_, i) => codeSlots[+i]);
+  s = s.replace(/\x00IMG(\d+)\x00/g, (_, i) => imgSlots[+i]);
   return s;
 }
 
