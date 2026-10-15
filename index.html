@@ -204,6 +204,7 @@ footer a:hover{color:var(--text2)}
 .gh-dot{width:8px;height:8px;border-radius:50%;background:var(--tip);display:inline-block;animation:pulse 2s ease infinite}
 .copy-preview-btn{font-size:11px;padding:4px 10px;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s}
 .copy-preview-btn:hover{color:var(--text)}
+.copy-preview-btn:disabled{opacity:.35;cursor:default;pointer-events:none}
 
 #genPreview{
   padding:24px;
@@ -247,6 +248,12 @@ footer a:hover{color:var(--text2)}
 .prev-text pre{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:6px 0}
 .prev-text pre code{background:none;border:none;padding:0;color:var(--text2);font-size:0.9em}
 .prev-text img{max-width:100%;border-radius:8px;display:block;margin:6px 0}
+.prev-text p.badges{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0}
+.prev-text p.badges img,.prev-text p.badges a img{display:inline-block;margin:0;border-radius:3px}
+.prev-text p.badges a{text-decoration:none}
+.shield{display:inline-flex;vertical-align:middle;border-radius:3px;overflow:hidden;color:#fff;font:600 11px/20px Verdana,'DejaVu Sans',sans-serif;text-shadow:0 1px 0 rgba(1,1,1,.25)}
+.shield .sh-l,.shield .sh-r{padding:0 7px;white-space:nowrap}.shield .sh-l{background:#555}
+.img-fail{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;background:var(--bg3);border:1px solid var(--border2);color:var(--text3)}
 .prev-text table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px}
 .prev-text th,.prev-text td{border:1px solid var(--border2);padding:6px 10px;text-align:left}
 .prev-text th{background:var(--bg3);color:var(--text);font-weight:600}
@@ -408,6 +415,8 @@ footer a:hover{color:var(--text2)}
         <div style="display:flex;align-items:center;gap:8px">
           <button id="exitCalloutBtn" onclick="exitCallout()">Salir de callout 🚪</button>
           <input type="file" id="mdFileInput" accept=".md,.markdown,.txt" style="display:none" onchange="openMdFile(event)">
+          <button class="copy-preview-btn" id="undoBtn" onmousedown="event.preventDefault()" onclick="histUndo()" title="Deshacer (Ctrl+Z)" disabled>↶ Deshacer</button>
+          <button class="copy-preview-btn" id="redoBtn" onmousedown="event.preventDefault()" onclick="histRedo()" title="Rehacer (Ctrl+Y)" disabled>↷ Rehacer</button>
           <button class="copy-preview-btn" onclick="document.getElementById('mdFileInput').click()">📂 Abrir .md</button>
           <button class="copy-preview-btn" onclick="resetGen()">↺ Reiniciar</button>
           <label style="font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;cursor:pointer">
@@ -635,17 +644,51 @@ function insertCallout(type) {
   updateGen();
 }
 
+// Sin selección: envuelve la palabra bajo el cursor, aplica a la línea actual o inserta plantilla
+function insertFormatNoSel(ta, type) {
+  const v = ta.value, pos = ta.selectionStart;
+  const ls = v.lastIndexOf('\n', pos - 1) + 1;
+  let le = v.indexOf('\n', pos); if (le < 0) le = v.length;
+  const line = v.slice(ls, le);
+  const pre = (line.match(/^\s*>+\s*/) || [''])[0];
+  const body = line.slice(pre.length);
+  const put = (from, to, txt, ph) => {
+    ta.value = v.slice(0, from) + txt + v.slice(to);
+    const a = from + txt.indexOf(ph);
+    ta.focus(); ta.setSelectionRange(a, a + ph.length); updateGen();
+    return true;
+  };
+  const INLINE = { BOLD:['**','texto'], ITALIC:['*','texto'], STRIKE:['~~','texto'], CODE:['`','código'] };
+  if (INLINE[type]) {
+    let a = pos, b = pos;
+    while (a > ls && /\S/.test(v[a - 1])) a--;
+    while (b < le && /\S/.test(v[b])) b++;
+    if (b > a) { ta.setSelectionRange(a, b); return false; }
+    const [m, ph] = INLINE[type];
+    return put(pos, pos, m + ph + m, ph);
+  }
+  if (type === 'IMAGE') return put(pos, pos, '![imagen](https://url-imagen.png)', 'https://url-imagen.png');
+  if (['HEADER','LIST','CHECKLIST','QUOTE','UPPER','LOWER','CODEBLOCK'].includes(type)) {
+    if (body.trim()) { ta.setSelectionRange(ls, le); return false; }
+    if (type === 'UPPER' || type === 'LOWER') { ta.focus(); return true; }
+    if (type === 'CODEBLOCK') return put(ls, le, ['```js','código','```'].map(l => pre + l).join('\n'), 'código');
+    const M = { HEADER:['# ','Título'], LIST:['- ','Elemento'], CHECKLIST:['- [ ] ','Tarea'], QUOTE:[pre ? '' : '> ','Cita'] };
+    const [mk, ph] = M[type];
+    return put(ls, le, pre + mk + ph, ph);
+  }
+  return false;
+}
+
 function insertFormat(type) {
   const ta = document.getElementById('genText');
-  const s = ta.selectionStart, e = ta.selectionEnd;
+  let s = ta.selectionStart, e = ta.selectionEnd;
+  if (s === e && type !== 'DIVIDER' && type !== 'TABLE') {
+    if (insertFormatNoSel(ta, type)) return;
+    s = ta.selectionStart; e = ta.selectionEnd;
+  }
   const sel = ta.value.substring(s, e);
   const antes = ta.value.substring(0, s);
   const despues = ta.value.substring(e);
-
-  if (s === e && type !== 'DIVIDER' && type !== 'TABLE') {
-    ta.focus();
-    return;
-  }
 
   let tpl = '', cs = 0, ce = 0;
 
@@ -745,25 +788,135 @@ function resetGen(){
   document.getElementById('genText').value='';
   updateGen();
 }
+/* ══════════════════════════════════════════════════════════════
+   HISTORIAL (Ctrl+Z / Ctrl+Y) — propio, porque asignar ta.value
+   por código rompe el deshacer nativo del textarea
+══════════════════════════════════════════════════════════════ */
+var hist = null;
+function histInit(){
+  const ta = document.getElementById('genText');
+  hist = { stack:[{v:ta.value,s:ta.selectionStart,e:ta.selectionEnd,t:0,typed:false}], i:0, max:300, lock:false, typing:false, brk:false };
+  histButtons();
+}
+function histButtons(){
+  const u = document.getElementById('undoBtn'), r = document.getElementById('redoBtn');
+  if(u) u.disabled = !hist || hist.i <= 0;
+  if(r) r.disabled = !hist || hist.i >= hist.stack.length - 1;
+}
+// Se llama al final de updateGen(): cambios por teclado se agrupan (800 ms); los de botones/código son un paso propio
+function histRecord(){
+  if(!hist || hist.lock) return;
+  const ta = document.getElementById('genText');
+  const typing = hist.typing, brk = hist.brk;
+  hist.typing = false; hist.brk = false;
+  const top = hist.stack[hist.i];
+  if(top.v === ta.value){ top.s = ta.selectionStart; top.e = ta.selectionEnd; return; }
+  hist.stack.length = hist.i + 1;                       // descarta el "rehacer"
+  const now = Date.now();
+  if(typing && !brk && top.typed && now - top.t < 800 && now - top.t0 < 4000 && hist.i > 0){
+    top.v = ta.value; top.s = ta.selectionStart; top.e = ta.selectionEnd; top.t = now;
+  } else {
+    hist.stack.push({v:ta.value,s:ta.selectionStart,e:ta.selectionEnd,t:now,t0:now,typed:typing&&!brk});
+    if(hist.stack.length > hist.max) hist.stack.shift();
+    hist.i = hist.stack.length - 1;
+  }
+  histButtons();
+}
+function histGo(i){
+  if(!hist || i < 0 || i >= hist.stack.length) return;
+  const ta = document.getElementById('genText'), st = hist.stack[i];
+  hist.i = i; hist.lock = true;
+  ta.value = st.v;
+  ta.focus(); ta.setSelectionRange(st.s, st.e);
+  updateGen();
+  hist.lock = false;
+  hist.stack[i].typed = false;                           // lo siguiente que escribas será un paso nuevo
+  histButtons();
+}
+function histUndo(){ if(hist) histGo(hist.i - 1); }
+function histRedo(){ if(hist) histGo(hist.i + 1); }
+(function(){
+  const ta = document.getElementById('genText');
+  histInit();
+  ta.addEventListener('beforeinput', e => {
+    if(e.inputType === 'historyUndo'){ e.preventDefault(); histUndo(); return; }
+    if(e.inputType === 'historyRedo'){ e.preventDefault(); histRedo(); return; }
+    hist.typing = true;
+    hist.brk = /^(insertFromPaste|insertFromDrop|deleteByCut|deleteByDrag|insertLineBreak|insertParagraph|insertReplacementText)$/.test(e.inputType);
+  });
+  ta.addEventListener('keydown', e => {
+    if(!(e.ctrlKey || e.metaKey) || e.altKey) return;
+    const k = e.key.toLowerCase();
+    if(k === 'z' && !e.shiftKey){ e.preventDefault(); histUndo(); }
+    else if(k === 'y' || (k === 'z' && e.shiftKey)){ e.preventDefault(); histRedo(); }
+  });
+})();
+
 function exportPDF(){
-  const html=document.getElementById('genPreview').innerHTML;
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Markdown</title>
-  <style>
-    body{font-family:'DM Sans',Arial,sans-serif;color:#1a1a1a;max-width:800px;margin:30px auto;padding:0 20px;line-height:1.6}
-    code{font-family:monospace;background:#f0f0f0;padding:1px 5px;border-radius:4px}
-    pre{background:#f4f4f4;padding:12px;border-radius:8px;overflow-x:auto}
-    pre code{background:none}
-    table{border-collapse:collapse;width:100%}
-    th,td{border:1px solid #ccc;padding:6px 10px}
-    th{background:#eee}
-    blockquote{border-left:3px solid #ccc;margin:6px 0;padding:2px 14px;color:#666;font-style:italic}
-    .prev-callout{border-left:4px solid #999;border-radius:0 8px 8px 0;padding:14px 18px;background:#f7f7f7;margin-bottom:12px}
-    .prev-callout-title{font-weight:600;margin-bottom:6px}
-    img{max-width:100%}
-  </style></head><body>${html}</body></html>`);
-  w.document.close();
-  w.onload=()=>w.print();
+  const src=document.getElementById('genPreview');
+  if(!src.querySelector('.prev-callout,.prev-text')){ alert('No hay contenido para exportar.'); return; }
+  const clone=src.cloneNode(true);
+  clone.querySelectorAll('[onerror]').forEach(i=>i.removeAttribute('onerror'));
+  const h=clone.querySelector('h1,h2,h3');
+  const title=((h?h.textContent:'Documento')||'Documento').trim().slice(0,80)||'Documento';
+  const PDF_CSS=`
+@page{size:A4;margin:16mm 14mm 18mm;@bottom-center{content:counter(page) " / " counter(pages);font:9pt Arial,sans-serif;color:#8a8f98}}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html,body{margin:0;padding:0}
+body{font-family:'DM Sans','Segoe UI',Helvetica,Arial,sans-serif;font-size:11pt;line-height:1.6;color:#1f2328;background:#fff}
+.prev-text,.prev-callout{margin:0 0 12px}
+h1,h2,h3,h4,h5,h6{color:#0f1419;font-weight:700;line-height:1.25;margin:18px 0 8px;break-after:avoid;page-break-after:avoid}
+h1{font-size:22pt;padding-bottom:6px;border-bottom:1px solid #d0d7de}
+h2{font-size:17pt;padding-bottom:4px;border-bottom:1px solid #e5e7eb}
+h3{font-size:14pt}h4{font-size:12pt}h5,h6{font-size:11pt}
+.prev-text>:first-child{margin-top:0}
+p{margin:0 0 8px;orphans:3;widows:3}
+a{color:#0969da;text-decoration:none}
+ul,ol{margin:0 0 8px;padding-left:24px}
+li{margin:2px 0}
+li.li-task{list-style:none;margin-left:-22px;display:flex;gap:6px;align-items:flex-start}
+li.li-task input{margin:5px 0 0}
+del{color:#6b7280}
+hr{border:0;border-top:1px solid #d0d7de;margin:14px 0}
+blockquote{margin:8px 0;padding:2px 14px;border-left:3px solid #d0d7de;color:#57606a;break-inside:avoid}
+code{font-family:'DM Mono',Consolas,'Courier New',monospace;font-size:.88em;background:#eff1f3;border:1px solid #e1e4e8;border-radius:4px;padding:1px 5px;color:#6d28d9}
+pre{margin:8px 0;padding:12px 14px;background:#f6f8fa;border:1px solid #d8dee4;border-radius:6px;white-space:pre-wrap;word-break:break-word;break-inside:avoid}
+pre code{background:none;border:0;padding:0;color:#24292f;font-size:9.5pt}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:10pt}
+tr{break-inside:avoid}
+th,td{border:1px solid #d0d7de;padding:6px 10px;text-align:left;vertical-align:top}
+th{background:#f3f4f6;font-weight:700}
+tr:nth-child(even) td{background:#fafbfc}
+img{max-width:100%;height:auto;break-inside:avoid}
+p.badges{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+p.badges img{display:inline-block;margin:0}
+.prev-callout{border-left:4px solid #999;border-radius:0 8px 8px 0;padding:12px 16px;break-inside:avoid;page-break-inside:avoid}
+.prev-callout-title{display:flex;align-items:center;gap:6px;font-weight:700;font-size:10.5pt;margin-bottom:6px}
+.prev-callout-title svg{width:16px;height:16px;fill:currentColor;flex-shrink:0}
+.prev-callout-body{color:#1f2328}
+.prev-callout-body>:last-child{margin-bottom:0}
+.shield{display:inline-flex;vertical-align:middle;border-radius:3px;overflow:hidden;color:#fff;font:600 11px/20px Verdana,'DejaVu Sans',sans-serif;text-shadow:0 1px 0 rgba(1,1,1,.25)}
+.shield .sh-l,.shield .sh-r{padding:0 7px;white-space:nowrap}.shield .sh-l{background:#555}
+.img-fail{display:inline-block;font-size:9pt;padding:1px 8px;border:1px solid #d0d7de;border-radius:4px;color:#6b7280;background:#f6f8fa}`;
+  // iframe oculto (sin popups bloqueados)
+  const f=document.createElement('iframe');
+  f.setAttribute('aria-hidden','true');
+  f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0';
+  document.body.appendChild(f);
+  const d=f.contentDocument;
+  d.open();
+  d.write('<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>'+escHTML(title)+'</title><style>'+PDF_CSS+'</style></head><body>'+clone.innerHTML+'</body></html>');
+  d.close();
+  // espera a las imágenes (máx. 8 s) y sustituye las que fallen
+  const loaded=Promise.all([...d.images].filter(i=>!i.complete).map(i=>new Promise(r=>{i.onload=i.onerror=r;})));
+  Promise.race([loaded,new Promise(r=>setTimeout(r,8000))]).then(()=>{
+    d.querySelectorAll('img').forEach(i=>{ if(!i.complete||!i.naturalWidth) i.outerHTML=failedHTML(i.getAttribute('src')||'',i.getAttribute('alt')||''); });
+    const prev=document.title; document.title=title;           // nombre sugerido del PDF
+    const cleanup=()=>{ document.title=prev; f.remove(); };
+    f.contentWindow.onafterprint=cleanup;
+    f.contentWindow.focus(); f.contentWindow.print();
+    setTimeout(()=>{ if(f.isConnected) cleanup(); },300000);
+  });
 }
 
 let syncingScroll=false;
@@ -822,6 +975,45 @@ document.getElementById('genText').addEventListener('keydown',function(e){
 
 function escHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+const badSrc=new Map();
+const isBad=u=>{const t=badSrc.get(u);return !!t&&Date.now()-t<60000;};
+const unesc=t=>t.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+const escAttr=t=>escHTML(String(t)).replace(/"/g,'&quot;');
+const SHIELD_COLORS={brightgreen:'#4c1',green:'#97ca00',yellowgreen:'#a4a61d',yellow:'#dfb317',orange:'#fe7d37',red:'#e05d44',blue:'#007ec6',grey:'#555',gray:'#555',lightgrey:'#9f9f9f',lightgray:'#9f9f9f',success:'#4c1',important:'#fe7d37',critical:'#e05d44',informational:'#007ec6',inactive:'#9f9f9f'};
+function shieldColor(c,def){
+  c=(c||'').trim(); if(!c) return def;
+  if(SHIELD_COLORS[c.toLowerCase()]) return SHIELD_COLORS[c.toLowerCase()];
+  if(/^#?[0-9a-f]{3,8}$/i.test(c)) return '#'+c.replace('#','');
+  if(/^[a-z]{3,20}$/i.test(c)) return c.toLowerCase();
+  return def;
+}
+// Badge de img.shields.io/badge/<label>-<mensaje>-<color> dibujado en local (si la red lo bloquea)
+function shieldsBadgeHTML(src){
+  const m=src.match(/^https?:\/\/img\.shields\.io\/badge\/([^?#]*)(?:\?([^#]*))?/i);
+  if(!m) return '';
+  let path=m[1]; try{ path=decodeURIComponent(path); }catch(e){}
+  const q=new URLSearchParams(m[2]||'');
+  const un=x=>x.replace(/\x01/g,'-').replace(/__/g,'\x02').replace(/_/g,' ').replace(/\x02/g,'_');
+  const p=path.replace(/--/g,'\x01').split('-').map(un);
+  let label='',msg='',color='';
+  if(p.length>=3){label=p[0];msg=p[1];color=p[2];}
+  else if(p.length===2){msg=p[0];color=p[1];}
+  else msg=p[0];
+  if(q.has('label')) label=q.get('label');
+  const c=shieldColor(q.get('color')||color,'#9f9f9f'), lc=shieldColor(q.get('labelColor'),'#555');
+  return '<span class="shield" title="'+escAttr(src)+'">'
+    +(label?'<span class="sh-l" style="background:'+lc+'">'+escHTML(label)+'</span>':'')
+    +'<span class="sh-r" style="background:'+c+'">'+escHTML(msg)+'</span></span>';
+}
+function failedHTML(src,alt){
+  return shieldsBadgeHTML(src)||'<span class="img-fail" title="No se pudo cargar: '+escAttr(src)+'">'+escHTML(alt||'imagen')+'</span>';
+}
+function imgRetry(el){
+  if(!el.dataset.r){ el.dataset.r='1'; const u=el.src; setTimeout(()=>{ if(el.isConnected) el.src=u; },1000); }
+  else { const src=el.getAttribute('src')||''; badSrc.set(src,Date.now()); el.outerHTML=failedHTML(src,el.getAttribute('alt')||''); }
+}
+function safeUrl(u){ u=u.trim(); if(/^[a-z][a-z0-9+.-]*:/i.test(u) && !/^(https?:|mailto:|data:image\/)/i.test(u)) return '#'; return u.replace(/"/g,'%22'); }
+
 /* ── Render inline (CORREGIDO) ── */
 function renderInline(l){
   const codeSlots = [], imgSlots = [];
@@ -836,12 +1028,19 @@ function renderInline(l){
     if(!/^(https?:\/\/|data:image\/)/i.test(src)) return tag;
     const w = attr('width').replace(/[^\d.%a-z]/gi,''), h = attr('height').replace(/[^\d.%a-z]/gi,'');
     const q = v => escHTML(v).replace(/"/g,'&quot;');
-    imgSlots.push('<img src="'+q(src)+'" alt="'+q(attr('alt'))+'"'+(w?' width="'+w+'"':'')+(h?' height="'+h+'"':'')+' style="max-width:100%;height:auto">');
+    if(isBad(src)){ imgSlots.push(failedHTML(src,attr('alt'))); return '\x00IMG' + (imgSlots.length-1) + '\x00'; }
+    imgSlots.push('<img src="'+q(src)+'" alt="'+q(attr('alt'))+'"'+(w?' width="'+w+'"':'')+(h?' height="'+h+'"':'')+' onerror="imgRetry(this)" referrerpolicy="no-referrer" style="max-width:100%;height:auto">');
     return '\x00IMG' + (imgSlots.length-1) + '\x00';
   });
   s = escHTML(s);
-  s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img src="$2" alt="$1" style="max-width:100%">');
-  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>');
+  s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,(_,a,u)=>{
+    const src=safeUrl(u);
+    imgSlots.push(isBad(unesc(src)) ? failedHTML(unesc(src),unesc(a))
+      : '<img src="'+src+'" alt="'+a.replace(/"/g,'&quot;')+'" onerror="imgRetry(this)" referrerpolicy="no-referrer" style="max-width:100%">');
+    return '\x00IMG'+(imgSlots.length-1)+'\x00';
+  });
+  s = s.replace(/\[([^\]]+)\]\(\s*\)/g,'$1');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,(_,t,u)=>{const h=safeUrl(u);return '<a href="'+h+'"'+(h[0]==='#'?'':' target="_blank" rel="noopener"')+'>'+t+'</a>';});
   s = s.replace(/\*\*\*([^*]+)\*\*\*/g,'<strong><em>$1</em></strong>');
   s = s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
   s = s.replace(/__([^_]+)__/g,'<strong>$1</strong>');
@@ -856,13 +1055,14 @@ function renderInline(l){
 /* ── Render MD en bloque (CORREGIDO: tablas en callouts) ── */
 function renderMD(text){
   const lines=text.split('\n');
-  let html='',inUl=false,inOl=false,inBq=false,inCode=false,codeBuf=[],codeLang='';
+  let html='',inBadges=false,inUl=false,inOl=false,inBq=false,inCode=false,codeBuf=[],codeLang='';
   const esc=escHTML;
   const inline=renderInline;
   const closeLists=()=>{
     if(inUl){html+='</ul>';inUl=false;}
     if(inOl){html+='</ol>';inOl=false;}
     if(inBq){html+='</blockquote>';inBq=false;}
+    if(inBadges){html+='</p>';inBadges=false;}
   };
   const stripQuote = (str) => str.replace(/^(\s*>\s*)+/, '');
 
@@ -910,6 +1110,11 @@ function renderMD(text){
     const olm=t.match(/^\d+\.\s+(.+)/);
     if(olm){if(!inOl){closeLists();html+='<ol>';inOl=true;}html+=`<li>${inline(olm[1])}</li>`;continue;}
     if(t===''){closeLists();continue;}
+    // líneas solo de imágenes/badges → misma fila (como GitHub)
+    if(/^(\s*(\[!\[[^\]]*\]\([^)]*\)\]\([^)]*\)|!\[[^\]]*\]\([^)]*\)|<img\b[^>]*>)\s*)+$/i.test(t)){
+      if(!inBadges){closeLists();html+='<p class="badges">';inBadges=true;}
+      html+=inline(t)+' ';continue;
+    }
     closeLists();html+=`<p>${inline(raw)}</p>`;
   }
   if(inCode)html+=`<pre><code>${esc(codeBuf.join('\n'))}</code></pre>`;
@@ -973,6 +1178,7 @@ function updateGen(){
     preview.innerHTML='<div class="prev-empty">El resultado aparecerá aquí conforme escribas...</div>';
   }
   checkCursorContext();
+  histRecord();
 }
 
 function switchGenTab(tab,btn){
